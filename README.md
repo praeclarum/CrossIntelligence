@@ -1,5 +1,7 @@
 # CrossIntelligence
 
+![NuGet Version](https://img.shields.io/nuget/v/CrossIntelligence)
+
 A library to provide access to Apple Intelligence and other LLMs for .NET and MAUI applications.
 
 ## Installation
