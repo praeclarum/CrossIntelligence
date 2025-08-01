@@ -5,6 +5,7 @@
     <ImplicitUsings>true</ImplicitUsings>
     <IsBindingProject>true</IsBindingProject>
     <IsTrimmable>true</IsTrimmable>
+    <!--<SupportedOSPlatformVersion>26</SupportedOSPlatformVersion>-->
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <XcodeProject Include="../Native/MauiIntelligence.xcodeproj">
+    <XcodeProject Include="../Apple/MauiIntelligence.xcodeproj">
       <SchemeName>MauiIntelligence</SchemeName>
       <!-- Metadata applicable to @(NativeReference) will be used if set, otherwise the following defaults will be used:
       <Kind>Framework</Kind>

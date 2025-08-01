@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import FoundationModels
 
 @objc(DotnetMauiIntelligence)
 public class DotnetMauiIntelligence : NSObject
@@ -13,7 +14,12 @@ public class DotnetMauiIntelligence : NSObject
 
     @objc
     public static func getString(myString: String) -> String {
-        return myString  + " from swift!"
+        return myString + " from swift!"
+    }
+
+    @objc
+    public static func echo(myString: String) -> String {
+        return myString
     }
 
 }
