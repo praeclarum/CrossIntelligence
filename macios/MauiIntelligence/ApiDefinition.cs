@@ -1,10 +1,10 @@
 using Foundation;
 
-namespace NewBindingMaciOS
+namespace MauiIntelligence
 {
-	// @interface DotnetNewBinding : NSObject
+	// @interface DotnetMauiIntelligence : NSObject
 	[BaseType (typeof(NSObject))]
-	interface DotnetNewBinding
+	interface DotnetMauiIntelligence
 	{
 		// +(NSString * _Nonnull)getStringWithMyString:(NSString * _Nonnull)myString __attribute__((warn_unused_result("")));
 		[Static]

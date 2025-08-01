@@ -1,3 +1,3 @@
-namespace NewBinding.MaciOS.Binding {
+namespace MauiIntelligence {
 
 }

@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		83E34F572C21CB2B008AA950 /* NewBinding.h in Headers */ = {isa = PBXBuildFile; fileRef = 83E34F562C21CB2B008AA950 /* NewBinding.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		83E34F5E2C21CC53008AA950 /* DotnetNewBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83E34F5D2C21CC53008AA950 /* DotnetNewBinding.swift */; };
+		83E34F572C21CB2B008AA950 /* MauiIntelligence.h in Headers */ = {isa = PBXBuildFile; fileRef = 83E34F562C21CB2B008AA950 /* MauiIntelligence.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		83E34F5E2C21CC53008AA950 /* DotnetMauiIntelligence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83E34F5D2C21CC53008AA950 /* DotnetMauiIntelligence.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		83E34F532C21CB2B008AA950 /* NewBinding.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NewBinding.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		83E34F562C21CB2B008AA950 /* NewBinding.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NewBinding.h; sourceTree = "<group>"; };
-		83E34F5D2C21CC53008AA950 /* DotnetNewBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotnetNewBinding.swift; sourceTree = "<group>"; };
+		83E34F532C21CB2B008AA950 /* MauiIntelligence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MauiIntelligence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		83E34F562C21CB2B008AA950 /* MauiIntelligence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MauiIntelligence.h; sourceTree = "<group>"; };
+		83E34F5D2C21CC53008AA950 /* DotnetMauiIntelligence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotnetMauiIntelligence.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,7 +31,7 @@
 		83E34F492C21CB2B008AA950 = {
 			isa = PBXGroup;
 			children = (
-				83E34F552C21CB2B008AA950 /* NewBinding */,
+				83E34F552C21CB2B008AA950 /* MauiIntelligence */,
 				83E34F542C21CB2B008AA950 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -39,18 +39,18 @@
 		83E34F542C21CB2B008AA950 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				83E34F532C21CB2B008AA950 /* NewBinding.framework */,
+				83E34F532C21CB2B008AA950 /* MauiIntelligence.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		83E34F552C21CB2B008AA950 /* NewBinding */ = {
+		83E34F552C21CB2B008AA950 /* MauiIntelligence */ = {
 			isa = PBXGroup;
 			children = (
-				83E34F562C21CB2B008AA950 /* NewBinding.h */,
-				83E34F5D2C21CC53008AA950 /* DotnetNewBinding.swift */,
+				83E34F562C21CB2B008AA950 /* MauiIntelligence.h */,
+				83E34F5D2C21CC53008AA950 /* DotnetMauiIntelligence.swift */,
 			);
-			path = NewBinding;
+			path = MauiIntelligence;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -60,16 +60,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83E34F572C21CB2B008AA950 /* NewBinding.h in Headers */,
+				83E34F572C21CB2B008AA950 /* MauiIntelligence.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		83E34F522C21CB2B008AA950 /* NewBinding */ = {
+		83E34F522C21CB2B008AA950 /* MauiIntelligence */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 83E34F5A2C21CB2B008AA950 /* Build configuration list for PBXNativeTarget "NewBinding" */;
+			buildConfigurationList = 83E34F5A2C21CB2B008AA950 /* Build configuration list for PBXNativeTarget "MauiIntelligence" */;
 			buildPhases = (
 				83E34F4E2C21CB2B008AA950 /* Headers */,
 				83E34F4F2C21CB2B008AA950 /* Sources */,
@@ -80,9 +80,9 @@
 			);
 			dependencies = (
 			);
-			name = NewBinding;
-			productName = NewBinding;
-			productReference = 83E34F532C21CB2B008AA950 /* NewBinding.framework */;
+			name = MauiIntelligence;
+			productName = MauiIntelligence;
+			productReference = 83E34F532C21CB2B008AA950 /* MauiIntelligence.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 /* End PBXNativeTarget section */
@@ -100,7 +100,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83E34F4D2C21CB2B008AA950 /* Build configuration list for PBXProject "NewBinding" */;
+			buildConfigurationList = 83E34F4D2C21CB2B008AA950 /* Build configuration list for PBXProject "MauiIntelligence" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -113,7 +113,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				83E34F522C21CB2B008AA950 /* NewBinding */,
+				83E34F522C21CB2B008AA950 /* MauiIntelligence */,
 			);
 		};
 /* End PBXProject section */
@@ -133,7 +133,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83E34F5E2C21CC53008AA950 /* DotnetNewBinding.swift in Sources */,
+				83E34F5E2C21CC53008AA950 /* DotnetMauiIntelligence.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,7 +290,7 @@
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.NewBinding;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.MauiIntelligence;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = auto;
 				SKIP_INSTALL = NO;
@@ -334,7 +334,7 @@
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.NewBinding;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.MauiIntelligence;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SDKROOT = auto;
 				SKIP_INSTALL = NO;
@@ -350,7 +350,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		83E34F4D2C21CB2B008AA950 /* Build configuration list for PBXProject "NewBinding" */ = {
+		83E34F4D2C21CB2B008AA950 /* Build configuration list for PBXProject "MauiIntelligence" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83E34F582C21CB2B008AA950 /* Debug */,
@@ -359,7 +359,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83E34F5A2C21CB2B008AA950 /* Build configuration list for PBXNativeTarget "NewBinding" */ = {
+		83E34F5A2C21CB2B008AA950 /* Build configuration list for PBXNativeTarget "MauiIntelligence" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83E34F5B2C21CB2B008AA950 /* Debug */,

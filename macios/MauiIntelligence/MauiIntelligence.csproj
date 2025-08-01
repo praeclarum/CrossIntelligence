@@ -13,8 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <XcodeProject Include="../Native/NewBinding.xcodeproj">
-      <SchemeName>NewBinding</SchemeName>
+    <XcodeProject Include="../Native/MauiIntelligence.xcodeproj">
+      <SchemeName>MauiIntelligence</SchemeName>
       <!-- Metadata applicable to @(NativeReference) will be used if set, otherwise the following defaults will be used:
       <Kind>Framework</Kind>
       <SmartLink>true</SmartLink>
