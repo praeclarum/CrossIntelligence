@@ -2,17 +2,18 @@ using Foundation;
 
 namespace MauiIntelligence
 {
-	// @interface DotnetMauiIntelligence : NSObject
-	[BaseType(typeof(NSObject))]
-	interface DotnetMauiIntelligence
-	{
-		// +(NSString * _Nonnull)getStringWithMyString:(NSString * _Nonnull)myString __attribute__((warn_unused_result("")));
-		[Static]
-		[Export("getStringWithMyString:")]
-		string GetString(string myString);
+	delegate void IntelligenceResponseHandler(string response, NSError error);
 
+	[BaseType(typeof(NSObject))]
+	interface IntelligenceSession
+	{
 		[Static]
-		[Export("echo:")]
-		string Echo(string myString);
+		[Export("isAppleIntelligenceAvailable")]
+		bool IsAppleIntelligenceAvailable { get; }
+
+
+		[Export("respond:onComplete:")]
+		[Async]
+		void Respond(string input, IntelligenceResponseHandler onComplete);
 	}
 }
