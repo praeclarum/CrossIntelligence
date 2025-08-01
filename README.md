@@ -1,6 +1,6 @@
 # CrossIntelligence
 
-[![Build](https://github.com/praeclarum/CrossIntelligence/actions/workflows/build.yml/badge.svg)](https://github.com/praeclarum/CrossIntelligence/actions/workflows/build.yml) ![NuGet Version](https://img.shields.io/nuget/v/CrossIntelligence)
+[![Build](https://github.com/praeclarum/CrossIntelligence/actions/workflows/build.yml/badge.svg)](https://github.com/praeclarum/CrossIntelligence/actions/workflows/build.yml) [![NuGet Version](https://img.shields.io/nuget/v/CrossIntelligence)](https://www.nuget.org/packages/CrossIntelligence)
 
 A library to provide access to Apple Intelligence and other LLMs for .NET and MAUI applications.
 
