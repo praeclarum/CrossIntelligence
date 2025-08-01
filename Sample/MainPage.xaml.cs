@@ -17,8 +17,15 @@ public partial class MainPage : ContentPage
 	{
 		IntelligenceBtn.Text = $"Apple Intelligence Available: {IntelligenceSession.IsAppleIntelligenceAvailable}...";
 		var session = new IntelligenceSession();
-		var response = await session.RespondAsync("What is the meaning of life?");
-		IntelligenceBtn.Text = $"Response: {response}";
+		try
+		{
+			var response = await session.RespondAsync("What is the meaning of life?");
+			OutputLabel.Text = $"Response: {response}";
+		}
+		catch (Exception ex)
+		{
+			OutputLabel.Text = $"Error: {ex.Message}";
+		}
     }
 
 	private void OnCounterClicked(object? sender, EventArgs e)

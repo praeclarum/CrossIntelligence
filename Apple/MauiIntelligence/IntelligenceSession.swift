@@ -19,17 +19,31 @@ public class TranscriptEntry : NSObject
     }
 }
 
-@objc(IntelligenceSessionDelegate)
-public protocol IntelligenceSessionDelegate
-{
+protocol IntelligenceSessionImplementation {
+    func respond(to prompt: String) async throws -> String
+}
+
+
+@available(iOS 26.0, macOS 26.0, macCatalyst 26.0, *)
+class AppleIntelligenceSession: IntelligenceSessionImplementation {
+    let session: LanguageModelSession
+    init() {
+        session = LanguageModelSession()
+    }
+    func respond(to prompt: String) async throws -> String {
+        let response = try await session.respond(to: prompt)
+        return response.content
+    }
 }
 
 @objc(IntelligenceSession)
 public class IntelligenceSession : NSObject
 {
+    private let implementation: IntelligenceSessionImplementation?
+    
     @objc
     public static var isAppleIntelligenceAvailable: Bool {
-        if #available(iOS 26.0, macOS 26.0, *) {
+        if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, *) {
             return SystemLanguageModel.default.isAvailable
         } else {
             return false
@@ -38,26 +52,31 @@ public class IntelligenceSession : NSObject
 
     @objc
     public override init() {
+        if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, *) {
+            implementation = AppleIntelligenceSession()
+        }
+        else {
+            implementation = nil
+        }
         super.init()
     }
     
     @objc
     public func respond(_ prompt: String, onComplete: @escaping (String, NSError?) -> Void) {
-        Task.detached {
-            if #available(iOS 26.0, macOS 26.0, *) {
-                let session = LanguageModelSession()
+        if let implementation {
+            Task.detached {
                 do {
-                    let response = try await session.respond(to: prompt)
-                    onComplete(response.content, nil)
+                    let response = try await implementation.respond(to: prompt)
+                    onComplete(response, nil)
                 }
                 catch {
                     let error = NSError(domain: "IntelligenceSessionError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to respond to prompt: \(error.localizedDescription)"])
                     onComplete("", error)
                 }
-            } else {
-                let error = NSError(domain: "IntelligenceSessionError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Apple Intelligence is not available on this version of iOS."])
-                onComplete("", error)
             }
+        } else {
+            let error = NSError(domain: "IntelligenceSessionError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Apple Intelligence is not available on this version of iOS."])
+            onComplete("", error)
         }
     }
 }

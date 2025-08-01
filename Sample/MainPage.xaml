@@ -19,10 +19,10 @@
                 SemanticProperties.HeadingLevel="Level1" />
 
             <Label
-                Text="How well will this work?"
+                x:Name="OutputLabel"
+                Text=""
                 Style="{StaticResource SubHeadline}"
-                SemanticProperties.HeadingLevel="Level2"
-                SemanticProperties.Description="Welcome to dot net Multi platform App U I" />
+                SemanticProperties.HeadingLevel="Level2" />
 
             <Button
                 x:Name="IntelligenceBtn"

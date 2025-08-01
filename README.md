@@ -24,9 +24,11 @@ Console.WriteLine(response);
 
 ## Features
 
-- Access to Apple Intelligence APIs
-- Support for .NET MAUI applications
-- Easy-to-use API for interacting with Apple Intelligence
+- [x] Access to Apple Intelligence APIs
+- [x] Text input and output
+- [ ] Chat functionality (transcripts, history)
+- [ ] Tool support
+- [ ] Structured output
 
 ## Contributing
 
