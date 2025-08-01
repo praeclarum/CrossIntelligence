@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		83E34F572C21CB2B008AA950 /* MauiIntelligence.h in Headers */ = {isa = PBXBuildFile; fileRef = 83E34F562C21CB2B008AA950 /* MauiIntelligence.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		83E34F5E2C21CC53008AA950 /* IntelligenceSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83E34F5D2C21CC53008AA950 /* IntelligenceSession.swift */; };
+		83E34F5E2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83E34F5D2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		83E34F532C21CB2B008AA950 /* MauiIntelligence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MauiIntelligence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		83E34F562C21CB2B008AA950 /* MauiIntelligence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MauiIntelligence.h; sourceTree = "<group>"; };
-		83E34F5D2C21CC53008AA950 /* IntelligenceSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntelligenceSession.swift; sourceTree = "<group>"; };
+		83E34F5D2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntelligenceSessionNative.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,7 +48,7 @@
 			isa = PBXGroup;
 			children = (
 				83E34F562C21CB2B008AA950 /* MauiIntelligence.h */,
-				83E34F5D2C21CC53008AA950 /* IntelligenceSession.swift */,
+				83E34F5D2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift */,
 			);
 			path = MauiIntelligence;
 			sourceTree = "<group>";
@@ -133,7 +133,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				83E34F5E2C21CC53008AA950 /* IntelligenceSession.swift in Sources */,
+				83E34F5E2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

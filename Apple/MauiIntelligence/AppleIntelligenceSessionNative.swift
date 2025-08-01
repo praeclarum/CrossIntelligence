@@ -27,8 +27,8 @@ protocol IntelligenceSessionImplementation {
 @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, *)
 class AppleIntelligenceSession: IntelligenceSessionImplementation {
     let session: LanguageModelSession
-    init() {
-        session = LanguageModelSession()
+    init(instructions: String?) {
+        session = LanguageModelSession(instructions: instructions)
     }
     func respond(to prompt: String) async throws -> String {
         let response = try await session.respond(to: prompt)
@@ -36,10 +36,21 @@ class AppleIntelligenceSession: IntelligenceSessionImplementation {
     }
 }
 
-@objc(IntelligenceSession)
-public class IntelligenceSession : NSObject
+@objc(AppleIntelligenceSessionNative)
+public class AppleIntelligenceSessionNative : NSObject
 {
     private let implementation: IntelligenceSessionImplementation?
+    
+    @objc
+    public init(instructions: String?) {
+        if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, *) {
+            implementation = AppleIntelligenceSession(instructions: instructions)
+        }
+        else {
+            implementation = nil
+        }
+        super.init()
+    }
     
     @objc
     public static var isAppleIntelligenceAvailable: Bool {
@@ -50,17 +61,6 @@ public class IntelligenceSession : NSObject
         }
     }
 
-    @objc
-    public override init() {
-        if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, *) {
-            implementation = AppleIntelligenceSession()
-        }
-        else {
-            implementation = nil
-        }
-        super.init()
-    }
-    
     @objc
     public func respond(_ prompt: String, onComplete: @escaping (String, NSError?) -> Void) {
         if let implementation {

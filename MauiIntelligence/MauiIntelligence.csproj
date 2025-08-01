@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net9.0-ios;net9.0-macos;net9.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks>net9.0;net9.0-android;net9.0-ios;net9.0-macos;net9.0-maccatalyst</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
     <IsBindingProject>true</IsBindingProject>
@@ -8,12 +8,9 @@
     <!--<SupportedOSPlatformVersion>26</SupportedOSPlatformVersion>-->
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
     <ObjcBindingApiDefinition Include="ApiDefinition.cs" />
     <ObjcBindingCoreSource Include="StructsAndEnums.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <XcodeProject Include="../Apple/MauiIntelligence.xcodeproj">
       <SchemeName>MauiIntelligence</SchemeName>
       <!-- Metadata applicable to @(NativeReference) will be used if set, otherwise the following defaults will be used:
