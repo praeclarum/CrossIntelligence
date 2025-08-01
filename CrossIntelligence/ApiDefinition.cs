@@ -3,7 +3,7 @@
 using System;
 using Foundation;
 
-namespace MauiIntelligence
+namespace CrossIntelligence
 {
 	delegate void IntelligenceResponseHandler(string response, NSError error);
 

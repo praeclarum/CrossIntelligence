@@ -1,4 +1,4 @@
-using MauiIntelligence;
+using CrossIntelligence;
 
 public interface IIntelligenceModel
 {

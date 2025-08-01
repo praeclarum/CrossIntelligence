@@ -65,7 +65,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\MauiIntelligence\MauiIntelligence.csproj" />
+		<ProjectReference Include="..\CrossIntelligence\CrossIntelligence.csproj" />
 	</ItemGroup>
 
 </Project>

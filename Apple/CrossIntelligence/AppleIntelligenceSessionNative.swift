@@ -1,6 +1,6 @@
 //
 //  IntelligenceSession.swift
-//  MauiIntelligence
+//  CrossIntelligence
 //
 //  Created by Frank A. Krueger on 8/1/25.
 //

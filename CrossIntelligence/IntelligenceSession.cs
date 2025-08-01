@@ -1,4 +1,4 @@
-namespace MauiIntelligence;
+namespace CrossIntelligence;
 
 public interface IIntelligenceSessionImplementation
 {

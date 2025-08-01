@@ -1,21 +1,21 @@
-# MAUI Intelligence
+# CrossIntelligence
 
-A library to provide access to Apple Intelligence for .NET iOS and macOS applications.
+A library to provide access to Apple Intelligence and other LLMs for .NET and MAUI applications.
 
 ## Installation
 
-You can install the MAUI Intelligence library via NuGet:
+You can install the CrossIntelligence library via NuGet:
 
-```
-dotnet add package MauiIntelligence
+```bash
+dotnet add package CrossIntelligence
 ```
 
 ## Usage
 
-To use the MAUI Intelligence library, you need to create an instance of the `IntelligenceSession` class and call its methods.
+To use the CrossIntelligence library, you need to create an instance of the `IntelligenceSession` class and call its methods.
 
 ```csharp
-using MauiIntelligence;
+using CrossIntelligence;
 
 var session = new IntelligenceSession();
 var response = await session.RespondAsync("What is the meaning of life?");
@@ -33,7 +33,7 @@ Console.WriteLine(response);
 
 ## Contributing
 
-If you'd like to contribute to the MAUI Intelligence library, please fork the repository and submit a pull request.
+If you'd like to contribute to the CrossIntelligence library, please fork the repository and submit a pull request.
 
 ## License
 

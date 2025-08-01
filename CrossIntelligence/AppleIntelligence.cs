@@ -1,4 +1,4 @@
-namespace MauiIntelligence;
+namespace CrossIntelligence;
 
 #if __IOS__ || __MACOS__ || __MACCATALYST__
 public class AppleIntelligenceModel : IIntelligenceModel

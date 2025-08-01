@@ -2,12 +2,12 @@
   <PropertyGroup>
     <TargetFrameworks>net9.0;net9.0-android;net9.0-ios;net9.0-macos;net9.0-maccatalyst</TargetFrameworks>
 
-    <PackageId>MauiIntelligence</PackageId>
+    <PackageId>CrossIntelligence</PackageId>
     <Version>0.1.0</Version>
     <Authors>praeclarum</Authors>
     <Company>Krueger Systems, Inc.</Company>
     <PackageTags>ai,llm,maui,intelligence,apple,ios,maccatalyst,macos,android</PackageTags>
-    <Description>MAUI Intelligence is a cross-platform library for integrating Apple Intelligence and other external LLMs into .NET applications.</Description>
+    <Description>CrossIntelligence is a cross-platform library for integrating Apple Intelligence and other external LLMs into .NET and MAUI applications.</Description>
 
     <Nullable>enable</Nullable>
     <ImplicitUsings>true</ImplicitUsings>
@@ -26,8 +26,8 @@
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos' or $([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">
     <ObjcBindingApiDefinition Include="ApiDefinition.cs" />
     <ObjcBindingCoreSource Include="StructsAndEnums.cs" />
-    <XcodeProject Include="../Apple/MauiIntelligence.xcodeproj">
-      <SchemeName>MauiIntelligence</SchemeName>
+    <XcodeProject Include="../Apple/CrossIntelligence.xcodeproj">
+      <SchemeName>CrossIntelligence</SchemeName>
       <!-- Metadata applicable to @(NativeReference) will be used if set, otherwise the following defaults will be used:
       <Kind>Framework</Kind>
       <SmartLink>true</SmartLink>
