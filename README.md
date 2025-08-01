@@ -18,7 +18,7 @@ To use the MAUI Intelligence library, you need to create an instance of the `Int
 using MauiIntelligence;
 
 var session = new IntelligenceSession();
-var response = session.Respond("What is the meaning of life?");
+var response = await session.RespondAsync("What is the meaning of life?");
 Console.WriteLine(response);
 ```
 
