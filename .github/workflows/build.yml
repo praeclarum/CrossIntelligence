@@ -31,5 +31,8 @@ jobs:
       with:
         global-json-file: global.json
 
+    - name: Install Workloads
+      run: dotnet workload restore CrossIntelligence.sln
+
     - name: Build
       run: dotnet build -c Release CrossIntelligence/CrossIntelligence.csproj
