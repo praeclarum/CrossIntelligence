@@ -3,40 +3,38 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Sample.MainPage">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
-            <Image
-                Source="dotnet_bot.png"
-                HeightRequest="185"
-                Aspect="AspectFit"
-                SemanticProperties.Description="dot net bot in a hovercraft number nine" />
+    <Grid
+        RowDefinitions="*, Auto"
+        Padding="30,0">
 
-            <Label
-                Text="MAUI Intelligence"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
+        <CollectionView
+            x:Name="TranscriptList"
+            SelectionMode="None"
+            Grid.Row="0">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Label Text="{Binding Text}"/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
-            <Label
-                x:Name="OutputLabel"
-                Text=""
-                Style="{StaticResource SubHeadline}"
-                SemanticProperties.HeadingLevel="Level2" />
-
+        <Grid
+            Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Editor
+                x:Name="PromptEditor"
+                Text="What is the meaning of life?"
+                Placeholder="Type your message here..."
+                Grid.Column="0"/>
             <Button
                 x:Name="IntelligenceBtn"
-                Text="Check for Intelligence" 
+                Text="Run"
                 Clicked="OnIntelligenceClicked"
-                HorizontalOptions="Fill" />
-
-            <Button
-                x:Name="CounterBtn"
-                Text="Click me" 
-                SemanticProperties.Hint="Counts the number of times you click"
-                Clicked="OnCounterClicked"
-                HorizontalOptions="Fill" />
-        </VerticalStackLayout>
-    </ScrollView>
+                Grid.Column="1"/>
+        </Grid>
+    </Grid>
 
 </ContentPage>

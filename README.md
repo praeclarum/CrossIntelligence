@@ -24,9 +24,10 @@ Console.WriteLine(response);
 
 ## Features
 
-- [x] Access to Apple Intelligence APIs
+- [x] Access to Apple Intelligence System Language Model
+- [ ] Access to OpenAI Models
 - [x] Text input and output
-- [ ] Chat functionality (transcripts, history)
+- [x] Chat functionality (session history)
 - [ ] Tool support
 - [ ] Structured output
 

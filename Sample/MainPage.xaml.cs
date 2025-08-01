@@ -1,42 +1,60 @@
 ﻿namespace Sample;
 
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 using MauiIntelligence;
 
+class TranscriptEntry
+{
+	public required string Text { get; set; }
+	public required bool IsUser { get; set; }
+}
+
 public partial class MainPage : ContentPage
 {
-	int count = 0;
+	IntelligenceSession session = new IntelligenceSession();
+
+	readonly ObservableCollection<TranscriptEntry> transcript = new ObservableCollection<TranscriptEntry>();
 
 	public MainPage()
 	{
 		InitializeComponent();
+		TranscriptList.ItemsSource = transcript;
 	}
 
 	private async void OnIntelligenceClicked(object? sender, EventArgs e)
 	{
-		IntelligenceBtn.Text = $"Apple Intelligence Available: {IntelligenceSession.IsAppleIntelligenceAvailable}...";
-		var session = new IntelligenceSession();
+		if (!IntelligenceSession.IsAppleIntelligenceAvailable)
+		{
+			transcript.Add(new TranscriptEntry { Text = $"Apple Intelligence not available :-(", IsUser = false });
+			return;
+		}
+
+		var prompt = PromptEditor.Text?.Trim() ?? string.Empty;
+		if (string.IsNullOrEmpty(prompt))
+		{
+			return;
+		}
+		PromptEditor.IsEnabled = false;
+		IntelligenceBtn.IsEnabled = false;
 		try
 		{
-			var response = await session.RespondAsync("What is the meaning of life?");
-			OutputLabel.Text = $"Response: {response}";
+			transcript.Add(new TranscriptEntry { Text = prompt, IsUser = true });
+			var response = await session.RespondAsync(prompt);
+			transcript.Add(new TranscriptEntry { Text = response, IsUser = false });
+			PromptEditor.Text = string.Empty;
 		}
 		catch (Exception ex)
 		{
-			OutputLabel.Text = $"Error: {ex.Message}";
+			transcript.Add(new TranscriptEntry { Text = $"Error: {ex.Message}", IsUser = false });
 		}
-    }
-
-	private void OnCounterClicked(object? sender, EventArgs e)
-	{
-		count++;
-
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
-
-		SemanticScreenReader.Announce(CounterBtn.Text);
+		finally
+		{
+			PromptEditor.IsEnabled = true;
+			IntelligenceBtn.IsEnabled = true;
+			TranscriptList.ScrollTo(transcript.Count - 1);
+		}
 	}
 }
