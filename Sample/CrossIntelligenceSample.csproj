@@ -21,7 +21,7 @@
 		<Nullable>enable</Nullable>
 
 		<!-- Display name -->
-		<ApplicationTitle>MAUI Intelligence Sample</ApplicationTitle>
+		<ApplicationTitle>CrossIntelligence Sample</ApplicationTitle>
 
 		<!-- App Identifier -->
 		<ApplicationId>com.companyname.sample</ApplicationId>
