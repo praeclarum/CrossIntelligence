@@ -18,9 +18,9 @@ fileprivate struct DotnetToolWrapper0: Tool, DotnetToolWrapper {
             self.content = content
         }
     }
-    func call(arguments: Arguments) async throws -> some PromptRepresentable {
+    func call(arguments: Arguments) async throws -> ToolOutput {
         let argsJson = "{}"
-        return tool?.execute(argsJson)
+        return ToolOutput(tool?.execute(argsJson) ?? "")
     }
 }
 
@@ -38,9 +38,9 @@ fileprivate struct DotnetToolWrapper1: Tool, DotnetToolWrapper {
             self.content = content
         }
     }
-    func call(arguments: Arguments) async throws -> some PromptRepresentable {
+    func call(arguments: Arguments) async throws -> ToolOutput {
         let argsJson = "{}"
-        return tool?.execute(argsJson)
+        return ToolOutput(tool?.execute(argsJson) ?? "")
     }
 }
 
@@ -58,9 +58,9 @@ fileprivate struct DotnetToolWrapper2: Tool, DotnetToolWrapper {
             self.content = content
         }
     }
-    func call(arguments: Arguments) async throws -> some PromptRepresentable {
+    func call(arguments: Arguments) async throws -> ToolOutput {
         let argsJson = "{}"
-        return tool?.execute(argsJson)
+        return ToolOutput(tool?.execute(argsJson) ?? "")
     }
 }
 
@@ -78,9 +78,9 @@ fileprivate struct DotnetToolWrapper3: Tool, DotnetToolWrapper {
             self.content = content
         }
     }
-    func call(arguments: Arguments) async throws -> some PromptRepresentable {
+    func call(arguments: Arguments) async throws -> ToolOutput {
         let argsJson = "{}"
-        return tool?.execute(argsJson)
+        return ToolOutput(tool?.execute(argsJson) ?? "")
     }
 }
 
@@ -98,9 +98,9 @@ fileprivate struct DotnetToolWrapper4: Tool, DotnetToolWrapper {
             self.content = content
         }
     }
-    func call(arguments: Arguments) async throws -> some PromptRepresentable {
+    func call(arguments: Arguments) async throws -> ToolOutput {
         let argsJson = "{}"
-        return tool?.execute(argsJson)
+        return ToolOutput(tool?.execute(argsJson) ?? "")
     }
 }
 
