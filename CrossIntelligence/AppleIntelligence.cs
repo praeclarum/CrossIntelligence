@@ -3,20 +3,32 @@ namespace CrossIntelligence;
 #if __IOS__ || __MACOS__ || __MACCATALYST__
 public class AppleIntelligenceModel : IIntelligenceModel
 {
-    public IIntelligenceSessionImplementation CreateSessionImplementation(string instructions)
+    public IIntelligenceSessionImplementation CreateSessionImplementation(string instructions, IIntelligenceTool[]? tools)
     {
         // Create and return an instance of a class that implements IIntelligenceSessionImplementation
-        return new AppleIntelligenceSessionImplementation(instructions);
+        return new AppleIntelligenceSessionImplementation(instructions, tools);
     }
+}
+
+class DotnetToolProxy : NSObject, IDotnetTool
+{
+    public IIntelligenceTool Tool { get; set; }
+
+    public DotnetToolProxy(IIntelligenceTool tool)
+    {
+        Tool = tool;
+    }
+
 }
 
 public class AppleIntelligenceSessionImplementation : IIntelligenceSessionImplementation
 {
     private readonly AppleIntelligenceSessionNative sessionNative;
 
-    public AppleIntelligenceSessionImplementation(string instructions)
+    public AppleIntelligenceSessionImplementation(string instructions, IIntelligenceTool[]? tools)
     {
-        sessionNative = new AppleIntelligenceSessionNative(instructions);
+        var dotnetTools = tools?.Select((tool, index) => new DotnetToolProxy(tool)).ToArray() ?? Array.Empty<DotnetToolProxy>();
+        sessionNative = new AppleIntelligenceSessionNative(instructions, dotnetTools);
         // Additional initialization with instructions if needed
     }
 

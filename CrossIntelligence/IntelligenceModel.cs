@@ -2,12 +2,12 @@ using CrossIntelligence;
 
 public interface IIntelligenceModel
 {
-    IIntelligenceSessionImplementation CreateSessionImplementation(string instructions);
+    IIntelligenceSessionImplementation CreateSessionImplementation(string instructions, IIntelligenceTool[]? tools);
 }
 
 public abstract class IntelligenceModel : IIntelligenceModel
 {
-    public abstract IIntelligenceSessionImplementation CreateSessionImplementation(string instructions);
+    public abstract IIntelligenceSessionImplementation CreateSessionImplementation(string instructions, IIntelligenceTool[]? tools);
 
     public static OpenAIModel OpenAI(string model, string apiKey)
     {

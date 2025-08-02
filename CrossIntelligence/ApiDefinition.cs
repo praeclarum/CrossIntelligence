@@ -12,7 +12,7 @@ namespace CrossIntelligence
 	{
 		[Export("initWithInstructions:")]
 		[DesignatedInitializer]
-		IntPtr Constructor(string instructions);
+		IntPtr Constructor(string instructions, NSObject[] tools);
 
 		[Static]
 		[Export("isAppleIntelligenceAvailable")]
@@ -21,6 +21,21 @@ namespace CrossIntelligence
 		[Export("respond:onComplete:")]
 		[Async]
 		void Respond(string input, IntelligenceResponseHandler onComplete);
+	}
+
+	[Protocol]
+	interface DotnetTool {
+		[Abstract]
+		[Export("name")]
+		string Name { get; }
+
+		[Abstract]
+		[Export("description")]
+		string Description { get; }
+
+		[Abstract]
+		[Export("execute:")]
+		string Execute(string input);
 	}
 }
 

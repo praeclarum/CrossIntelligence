@@ -14,8 +14,8 @@ public class IntelligenceSession
         this.implementation = implementation;
     }
 
-    public IntelligenceSession(IIntelligenceModel model, string instructions = "")
-        : this(model.CreateSessionImplementation(instructions))
+    public IntelligenceSession(IIntelligenceModel model, string instructions = "", IIntelligenceTool[]? tools = null)
+        : this(model.CreateSessionImplementation(instructions: instructions, tools: tools))
     {
     }
 

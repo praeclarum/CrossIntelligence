@@ -49,3 +49,10 @@ func getTools(dotnetTools: [DotnetTool]) -> [any Tool & DotnetToolWrapper] {
     let tools = dotnetTools.map { allocTool(dotnetTool: $0) }
     return tools
 }
+
+@available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
+func freeTools(tools: [any Tool & DotnetToolWrapper]) {
+    for tool in tools {
+        gTools[tool.index].tool = nil
+    }
+}
