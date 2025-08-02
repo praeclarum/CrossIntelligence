@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		2DE0D8CB2E3D7D2500825EC5 /* DotnetToolWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE0D8CA2E3D7D2500825EC5 /* DotnetToolWrapper.swift */; };
+		2DE0D8CD2E3D8EF000825EC5 /* DotnetToolWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE0D8CC2E3D8EF000825EC5 /* DotnetToolWrappers.swift */; };
 		83E34F572C21CB2B008AA950 /* CrossIntelligence.h in Headers */ = {isa = PBXBuildFile; fileRef = 83E34F562C21CB2B008AA950 /* CrossIntelligence.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83E34F5E2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83E34F5D2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		2DE0D8CA2E3D7D2500825EC5 /* DotnetToolWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotnetToolWrapper.swift; sourceTree = "<group>"; };
+		2DE0D8CC2E3D8EF000825EC5 /* DotnetToolWrappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotnetToolWrappers.swift; sourceTree = "<group>"; };
 		83E34F532C21CB2B008AA950 /* CrossIntelligence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CrossIntelligence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		83E34F562C21CB2B008AA950 /* CrossIntelligence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CrossIntelligence.h; sourceTree = "<group>"; };
 		83E34F5D2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntelligenceSessionNative.swift; sourceTree = "<group>"; };
@@ -52,6 +54,7 @@
 				83E34F562C21CB2B008AA950 /* CrossIntelligence.h */,
 				83E34F5D2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift */,
 				2DE0D8CA2E3D7D2500825EC5 /* DotnetToolWrapper.swift */,
+				2DE0D8CC2E3D8EF000825EC5 /* DotnetToolWrappers.swift */,
 			);
 			path = CrossIntelligence;
 			sourceTree = "<group>";
@@ -137,6 +140,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				83E34F5E2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift in Sources */,
+				2DE0D8CD2E3D8EF000825EC5 /* DotnetToolWrappers.swift in Sources */,
 				2DE0D8CB2E3D7D2500825EC5 /* DotnetToolWrapper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
