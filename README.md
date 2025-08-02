@@ -28,7 +28,9 @@ Console.WriteLine(response);
 
 - [x] Access to Apple Intelligence System Language Model
 - [ ] Access to OpenAI Models
-- [x] Text input and output
+- [x] Prompt text input
+- [x] Text output
+- [x] System instructions
 - [x] Chat functionality (session history)
 - [ ] Tool support
 - [ ] Structured output

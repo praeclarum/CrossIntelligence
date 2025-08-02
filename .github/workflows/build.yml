@@ -39,4 +39,4 @@ jobs:
       run: dotnet workload restore CrossIntelligence.sln
 
     - name: Build
-      run: dotnet build -f net9.0-macos -c Release CrossIntelligence/CrossIntelligence.csproj
+      run: dotnet build -f net9.0 -c Release CrossIntelligence/CrossIntelligence.csproj
