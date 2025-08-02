@@ -3,14 +3,14 @@ namespace CrossIntelligence;
 #if __IOS__ || __MACOS__ || __MACCATALYST__
 public class AppleIntelligenceModel : IIntelligenceModel
 {
-    public IIntelligenceSessionImplementation CreateSessionImplementation(string instructions, IIntelligenceTool[]? tools)
+    public IIntelligenceSessionImplementation CreateSessionImplementation(IIntelligenceTool[]? tools, string instructions)
     {
         // Create and return an instance of a class that implements IIntelligenceSessionImplementation
         return new AppleIntelligenceSessionImplementation(instructions, tools);
     }
 }
 
-class DotnetToolProxy : NSObject, IDotnetTool
+class DotnetToolProxy : DotnetTool
 {
     public IIntelligenceTool Tool { get; set; }
 
@@ -19,6 +19,8 @@ class DotnetToolProxy : NSObject, IDotnetTool
         Tool = tool;
     }
 
+    public override string ToolName => Tool.Name;
+    public override string ToolDescription => Tool.Description;
 }
 
 public class AppleIntelligenceSessionImplementation : IIntelligenceSessionImplementation

@@ -11,8 +11,8 @@ tool_template = """
 fileprivate struct DotnetToolWrapper$index$: Tool, DotnetToolWrapper {
     var tool: DotnetTool?
     var index: Int { $index$ }
-    var name: String { tool?.name ?? "" }
-    var description: String { tool?.description ?? "" }
+    var name: String { tool?.toolName ?? "" }
+    var description: String { tool?.toolDescription ?? "" }
     struct Arguments: Generable {
         let content: GeneratedContent
         static var generationSchema: GenerationSchema { gArgsSchemas[$index$] }
@@ -23,7 +23,7 @@ fileprivate struct DotnetToolWrapper$index$: Tool, DotnetToolWrapper {
     }
     func call(arguments: Arguments) async throws -> some PromptRepresentable {
         let argsJson = "{}"
-        return tool?.call(arguments: argsJson)
+        return tool?.execute(argsJson)
     }
 }
 """

@@ -8,8 +8,8 @@ import FoundationModels
 fileprivate struct DotnetToolWrapper0: Tool, DotnetToolWrapper {
     var tool: DotnetTool?
     var index: Int { 0 }
-    var name: String { tool?.name ?? "" }
-    var description: String { tool?.description ?? "" }
+    var name: String { tool?.toolName ?? "" }
+    var description: String { tool?.toolDescription ?? "" }
     struct Arguments: Generable {
         let content: GeneratedContent
         static var generationSchema: GenerationSchema { gArgsSchemas[0] }
@@ -20,7 +20,7 @@ fileprivate struct DotnetToolWrapper0: Tool, DotnetToolWrapper {
     }
     func call(arguments: Arguments) async throws -> some PromptRepresentable {
         let argsJson = "{}"
-        return tool?.call(arguments: argsJson)
+        return tool?.execute(argsJson)
     }
 }
 
@@ -28,8 +28,8 @@ fileprivate struct DotnetToolWrapper0: Tool, DotnetToolWrapper {
 fileprivate struct DotnetToolWrapper1: Tool, DotnetToolWrapper {
     var tool: DotnetTool?
     var index: Int { 1 }
-    var name: String { tool?.name ?? "" }
-    var description: String { tool?.description ?? "" }
+    var name: String { tool?.toolName ?? "" }
+    var description: String { tool?.toolDescription ?? "" }
     struct Arguments: Generable {
         let content: GeneratedContent
         static var generationSchema: GenerationSchema { gArgsSchemas[1] }
@@ -40,7 +40,7 @@ fileprivate struct DotnetToolWrapper1: Tool, DotnetToolWrapper {
     }
     func call(arguments: Arguments) async throws -> some PromptRepresentable {
         let argsJson = "{}"
-        return tool?.call(arguments: argsJson)
+        return tool?.execute(argsJson)
     }
 }
 
@@ -48,8 +48,8 @@ fileprivate struct DotnetToolWrapper1: Tool, DotnetToolWrapper {
 fileprivate struct DotnetToolWrapper2: Tool, DotnetToolWrapper {
     var tool: DotnetTool?
     var index: Int { 2 }
-    var name: String { tool?.name ?? "" }
-    var description: String { tool?.description ?? "" }
+    var name: String { tool?.toolName ?? "" }
+    var description: String { tool?.toolDescription ?? "" }
     struct Arguments: Generable {
         let content: GeneratedContent
         static var generationSchema: GenerationSchema { gArgsSchemas[2] }
@@ -60,7 +60,7 @@ fileprivate struct DotnetToolWrapper2: Tool, DotnetToolWrapper {
     }
     func call(arguments: Arguments) async throws -> some PromptRepresentable {
         let argsJson = "{}"
-        return tool?.call(arguments: argsJson)
+        return tool?.execute(argsJson)
     }
 }
 
@@ -68,8 +68,8 @@ fileprivate struct DotnetToolWrapper2: Tool, DotnetToolWrapper {
 fileprivate struct DotnetToolWrapper3: Tool, DotnetToolWrapper {
     var tool: DotnetTool?
     var index: Int { 3 }
-    var name: String { tool?.name ?? "" }
-    var description: String { tool?.description ?? "" }
+    var name: String { tool?.toolName ?? "" }
+    var description: String { tool?.toolDescription ?? "" }
     struct Arguments: Generable {
         let content: GeneratedContent
         static var generationSchema: GenerationSchema { gArgsSchemas[3] }
@@ -80,7 +80,7 @@ fileprivate struct DotnetToolWrapper3: Tool, DotnetToolWrapper {
     }
     func call(arguments: Arguments) async throws -> some PromptRepresentable {
         let argsJson = "{}"
-        return tool?.call(arguments: argsJson)
+        return tool?.execute(argsJson)
     }
 }
 
@@ -88,8 +88,8 @@ fileprivate struct DotnetToolWrapper3: Tool, DotnetToolWrapper {
 fileprivate struct DotnetToolWrapper4: Tool, DotnetToolWrapper {
     var tool: DotnetTool?
     var index: Int { 4 }
-    var name: String { tool?.name ?? "" }
-    var description: String { tool?.description ?? "" }
+    var name: String { tool?.toolName ?? "" }
+    var description: String { tool?.toolDescription ?? "" }
     struct Arguments: Generable {
         let content: GeneratedContent
         static var generationSchema: GenerationSchema { gArgsSchemas[4] }
@@ -100,7 +100,7 @@ fileprivate struct DotnetToolWrapper4: Tool, DotnetToolWrapper {
     }
     func call(arguments: Arguments) async throws -> some PromptRepresentable {
         let argsJson = "{}"
-        return tool?.call(arguments: argsJson)
+        return tool?.execute(argsJson)
     }
 }
 

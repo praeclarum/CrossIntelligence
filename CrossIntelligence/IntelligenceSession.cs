@@ -14,14 +14,14 @@ public class IntelligenceSession
         this.implementation = implementation;
     }
 
-    public IntelligenceSession(IIntelligenceModel model, string instructions = "", IIntelligenceTool[]? tools = null)
-        : this(model.CreateSessionImplementation(instructions: instructions, tools: tools))
+    public IntelligenceSession(IIntelligenceModel model, IIntelligenceTool[]? tools = null, string instructions = "")
+        : this(model.CreateSessionImplementation(tools: tools, instructions: instructions))
     {
     }
 
 #if __IOS__ || __MACOS__ || __MACCATALYST__
-    public IntelligenceSession(string instructions = "")
-        : this(IntelligenceModel.AppleIntelligence, instructions)
+    public IntelligenceSession(IIntelligenceTool[]? tools = null, string instructions = "")
+        : this(IntelligenceModel.AppleIntelligence, tools, instructions)
     {
     }
 #endif

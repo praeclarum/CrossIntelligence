@@ -14,7 +14,16 @@ class TranscriptEntry
 
 public partial class MainPage : ContentPage
 {
-	IntelligenceSession session = new IntelligenceSession();
+	readonly IntelligenceSession session = new IntelligenceSession(new[] {
+		new TestTool()
+	});
+
+	class TestTool : IIntelligenceTool
+	{
+		public string Name => "testTool";
+		public string Description => "A test tool for demonstration purposes.";
+		public string Execute(string input) => $"Executed Test Tool with input: {input}";
+	}
 
 	readonly ObservableCollection<TranscriptEntry> transcript = new ObservableCollection<TranscriptEntry>();
 

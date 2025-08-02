@@ -38,10 +38,10 @@ fileprivate func freeTool(index: Int) {
 
 @objc(DotnetTool)
 public protocol DotnetTool: Sendable {
-    var name: String { get }
-    var description: String { get }
-    var argsSchemaProperties: [String] { get }
-    func call(arguments: String) -> String
+    var toolName: String { get }
+    var toolDescription: String { get }
+    // var argsSchemaProperties: [String] { get }
+    func execute(_ arguments: String) -> String
 }
 
 @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)

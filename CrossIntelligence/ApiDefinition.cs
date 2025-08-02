@@ -10,7 +10,7 @@ namespace CrossIntelligence
 	[BaseType(typeof(NSObject))]
 	interface AppleIntelligenceSessionNative
 	{
-		[Export("initWithInstructions:")]
+		[Export("initWithInstructions:dotnetTools:")]
 		[DesignatedInitializer]
 		IntPtr Constructor(string instructions, NSObject[] tools);
 
@@ -23,15 +23,16 @@ namespace CrossIntelligence
 		void Respond(string input, IntelligenceResponseHandler onComplete);
 	}
 
-	[Protocol]
+	[BaseType (typeof (NSObject))]
+	[Model][Protocol]
 	interface DotnetTool {
 		[Abstract]
-		[Export("name")]
-		string Name { get; }
+		[Export("toolName")]
+		string ToolName { get; }
 
 		[Abstract]
-		[Export("description")]
-		string Description { get; }
+		[Export("toolDescription")]
+		string ToolDescription { get; }
 
 		[Abstract]
 		[Export("execute:")]

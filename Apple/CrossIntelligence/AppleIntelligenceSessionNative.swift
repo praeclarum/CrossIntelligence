@@ -27,8 +27,8 @@ protocol IntelligenceSessionImplementation {
 @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, *)
 class AppleIntelligenceSession: IntelligenceSessionImplementation {
     let session: LanguageModelSession
-    init(instructions: String?) {
-        session = LanguageModelSession(instructions: instructions)
+    init(tools: [any Tool & DotnetToolWrapper], instructions: String?) {
+        session = LanguageModelSession(tools: tools, instructions: instructions)
     }
     func respond(to prompt: String) async throws -> String {
         let response = try await session.respond(to: prompt)
@@ -42,9 +42,14 @@ public class AppleIntelligenceSessionNative : NSObject
     private let implementation: IntelligenceSessionImplementation?
     
     @objc
-    public init(instructions: String?) {
+    public init(instructions: String?, dotnetTools: [DotnetTool]) {
         if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, *) {
-            implementation = AppleIntelligenceSession(instructions: instructions)
+            print("GOT TOOLS:")
+            for dt in dotnetTools {
+                print("  \(dt.toolName): \(dt.toolDescription)")
+            }
+            let tools = getTools(dotnetTools: dotnetTools)
+            implementation = AppleIntelligenceSession(tools: tools, instructions: instructions)
         }
         else {
             implementation = nil
