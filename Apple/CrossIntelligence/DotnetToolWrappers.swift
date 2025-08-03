@@ -19,7 +19,7 @@ fileprivate struct DotnetToolWrapper0: Tool, DotnetToolWrapper {
         }
     }
     func call(arguments: Arguments) async throws -> ToolOutput {
-        let argsJson = "{}"
+        let argsJson = arguments.content.json
         guard let tool = tool else {
             throw NSError(domain: "DotnetToolWrapper", code: 0, userInfo: [NSLocalizedDescriptionKey: "Tool is not initialized"])
         }
@@ -47,7 +47,7 @@ fileprivate struct DotnetToolWrapper1: Tool, DotnetToolWrapper {
         }
     }
     func call(arguments: Arguments) async throws -> ToolOutput {
-        let argsJson = "{}"
+        let argsJson = arguments.content.json
         guard let tool = tool else {
             throw NSError(domain: "DotnetToolWrapper", code: 0, userInfo: [NSLocalizedDescriptionKey: "Tool is not initialized"])
         }
@@ -75,7 +75,7 @@ fileprivate struct DotnetToolWrapper2: Tool, DotnetToolWrapper {
         }
     }
     func call(arguments: Arguments) async throws -> ToolOutput {
-        let argsJson = "{}"
+        let argsJson = arguments.content.json
         guard let tool = tool else {
             throw NSError(domain: "DotnetToolWrapper", code: 0, userInfo: [NSLocalizedDescriptionKey: "Tool is not initialized"])
         }
@@ -103,7 +103,7 @@ fileprivate struct DotnetToolWrapper3: Tool, DotnetToolWrapper {
         }
     }
     func call(arguments: Arguments) async throws -> ToolOutput {
-        let argsJson = "{}"
+        let argsJson = arguments.content.json
         guard let tool = tool else {
             throw NSError(domain: "DotnetToolWrapper", code: 0, userInfo: [NSLocalizedDescriptionKey: "Tool is not initialized"])
         }
@@ -131,7 +131,7 @@ fileprivate struct DotnetToolWrapper4: Tool, DotnetToolWrapper {
         }
     }
     func call(arguments: Arguments) async throws -> ToolOutput {
-        let argsJson = "{}"
+        let argsJson = arguments.content.json
         guard let tool = tool else {
             throw NSError(domain: "DotnetToolWrapper", code: 0, userInfo: [NSLocalizedDescriptionKey: "Tool is not initialized"])
         }

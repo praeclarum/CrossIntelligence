@@ -14,9 +14,9 @@ class TranscriptEntry
 
 public partial class MainPage : ContentPage
 {
-	readonly IntelligenceSession session = new IntelligenceSession(new[] {
+	readonly IntelligenceSession session = new (tools: [
 		new GuidGenerator()
-	});
+	]);
 
 	class GuidGenerator : IntelligenceTool<GuidGeneratorArguments>
 	{

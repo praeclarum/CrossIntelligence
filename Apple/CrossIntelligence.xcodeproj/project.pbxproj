@@ -7,17 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2DE0D8CB2E3D7D2500825EC5 /* DotnetTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE0D8CA2E3D7D2500825EC5 /* DotnetTools.swift */; };
+		2DE0D8CB2E3D7D2500825EC5 /* DotnetTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE0D8CA2E3D7D2500825EC5 /* DotnetTool.swift */; };
 		2DE0D8CD2E3D8EF000825EC5 /* DotnetToolWrappers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE0D8CC2E3D8EF000825EC5 /* DotnetToolWrappers.swift */; };
 		2DE0D8CF2E3FE56800825EC5 /* JsonSchema.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE0D8CE2E3FE56800825EC5 /* JsonSchema.swift */; };
+		2DE0D8D12E3FE92500825EC5 /* JsonContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DE0D8D02E3FE92500825EC5 /* JsonContent.swift */; };
 		83E34F572C21CB2B008AA950 /* CrossIntelligence.h in Headers */ = {isa = PBXBuildFile; fileRef = 83E34F562C21CB2B008AA950 /* CrossIntelligence.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		83E34F5E2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83E34F5D2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		2DE0D8CA2E3D7D2500825EC5 /* DotnetTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotnetTools.swift; sourceTree = "<group>"; };
+		2DE0D8CA2E3D7D2500825EC5 /* DotnetTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotnetTool.swift; sourceTree = "<group>"; };
 		2DE0D8CC2E3D8EF000825EC5 /* DotnetToolWrappers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotnetToolWrappers.swift; sourceTree = "<group>"; };
 		2DE0D8CE2E3FE56800825EC5 /* JsonSchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonSchema.swift; sourceTree = "<group>"; };
+		2DE0D8D02E3FE92500825EC5 /* JsonContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JsonContent.swift; sourceTree = "<group>"; };
 		83E34F532C21CB2B008AA950 /* CrossIntelligence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CrossIntelligence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		83E34F562C21CB2B008AA950 /* CrossIntelligence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CrossIntelligence.h; sourceTree = "<group>"; };
 		83E34F5D2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleIntelligenceSessionNative.swift; sourceTree = "<group>"; };
@@ -55,9 +57,10 @@
 			children = (
 				83E34F562C21CB2B008AA950 /* CrossIntelligence.h */,
 				83E34F5D2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift */,
-				2DE0D8CA2E3D7D2500825EC5 /* DotnetTools.swift */,
+				2DE0D8CA2E3D7D2500825EC5 /* DotnetTool.swift */,
 				2DE0D8CC2E3D8EF000825EC5 /* DotnetToolWrappers.swift */,
 				2DE0D8CE2E3FE56800825EC5 /* JsonSchema.swift */,
+				2DE0D8D02E3FE92500825EC5 /* JsonContent.swift */,
 			);
 			path = CrossIntelligence;
 			sourceTree = "<group>";
@@ -142,10 +145,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2DE0D8D12E3FE92500825EC5 /* JsonContent.swift in Sources */,
 				83E34F5E2C21CC53008AA950 /* AppleIntelligenceSessionNative.swift in Sources */,
 				2DE0D8CD2E3D8EF000825EC5 /* DotnetToolWrappers.swift in Sources */,
 				2DE0D8CF2E3FE56800825EC5 /* JsonSchema.swift in Sources */,
-				2DE0D8CB2E3D7D2500825EC5 /* DotnetTools.swift in Sources */,
+				2DE0D8CB2E3D7D2500825EC5 /* DotnetTool.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

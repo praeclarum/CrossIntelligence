@@ -22,7 +22,7 @@ public abstract class IntelligenceTool<T> : IIntelligenceTool
         {
             throw new ArgumentException("Invalid input for tool execution.");
         }
-        return ExecuteAsync(arguments);        
+        return ExecuteAsync(arguments);
     }
 
     public abstract Task<string> ExecuteAsync(T arguments);
