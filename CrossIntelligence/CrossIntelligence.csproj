@@ -36,7 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NJsonSchema" Version="11.4.0" />
+    <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
   </ItemGroup>
 
 </Project>
