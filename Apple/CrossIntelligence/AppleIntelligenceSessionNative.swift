@@ -48,7 +48,7 @@ public class AppleIntelligenceSessionNative : NSObject
             for dt in dotnetTools {
                 print("  \(dt.toolName): \(dt.toolDescription)")
             }
-            let tools = getTools(dotnetTools: dotnetTools)
+            let tools = allocTools(dotnetTools: dotnetTools)
             implementation = AppleIntelligenceSession(tools: tools, instructions: instructions)
         }
         else {

@@ -8,10 +8,12 @@
 import Foundation
 import FoundationModels
 
-@available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
-@Generable
-struct DefaultDotnetArgs {
-    var input: String
+@objc(DotnetTool)
+public protocol DotnetTool: Sendable {
+    var toolName: String { get }
+    var toolDescription: String { get }
+    var argumentsJSONSchema: String { get }
+    func execute(_ arguments: String, onDone: @escaping (String) -> Void)
 }
 
 protocol DotnetToolWrapper {
@@ -20,13 +22,18 @@ protocol DotnetToolWrapper {
 }
 
 @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
+@Generable
+struct DefaultDotnetArgs {
+    var input: String
+}
+
+@available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
 fileprivate func allocTool(dotnetTool: DotnetTool) -> any Tool & DotnetToolWrapper {
     for i in 0..<gTools.count {
         if gTools[i].tool == nil {
             let argumentsJSONSchema = dotnetTool.argumentsJSONSchema
             print("Allocating tool \(i): \(dotnetTool.toolName) with schema: \(argumentsJSONSchema)")
-            let decoder = JSONDecoder()
-            if let schema = try? decoder.decode(GenerationSchema.self, from: argumentsJSONSchema.data(using: .utf8)!) {
+            if let schema = parseJsonSchema(argumentsJSONSchema) {
                 print("+ Got schema for tool \(i): \(schema)")
                 gArgsSchemas[i] = schema
             } else {
@@ -41,22 +48,14 @@ fileprivate func allocTool(dotnetTool: DotnetTool) -> any Tool & DotnetToolWrapp
 }
 
 @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
-fileprivate func freeTool(index: Int) {
-    gTools[index].tool = nil
-}
-
-@objc(DotnetTool)
-public protocol DotnetTool: Sendable {
-    var toolName: String { get }
-    var toolDescription: String { get }
-    var argumentsJSONSchema: String { get }
-    func execute(_ arguments: String, onDone: @escaping (String) -> Void)
+func allocTools(dotnetTools: [DotnetTool]) -> [any Tool & DotnetToolWrapper] {
+    let tools = dotnetTools.map { allocTool(dotnetTool: $0) }
+    return tools
 }
 
 @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
-func getTools(dotnetTools: [DotnetTool]) -> [any Tool & DotnetToolWrapper] {
-    let tools = dotnetTools.map { allocTool(dotnetTool: $0) }
-    return tools
+fileprivate func freeTool(index: Int) {
+    gTools[index].tool = nil
 }
 
 @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)

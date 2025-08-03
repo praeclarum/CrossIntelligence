@@ -27,8 +27,8 @@ public partial class MainPage : ContentPage
 			await Task.Delay(1000); // Simulate some async work
 			return $"Guid Generator finished with output: {Guid.NewGuid()}";
 		}
-
 	}
+
 	class GuidGeneratorArguments
 	{
 		public string Input { get; set; } = string.Empty;
