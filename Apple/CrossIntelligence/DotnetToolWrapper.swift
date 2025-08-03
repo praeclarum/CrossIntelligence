@@ -23,7 +23,16 @@ protocol DotnetToolWrapper {
 fileprivate func allocTool(dotnetTool: DotnetTool) -> any Tool & DotnetToolWrapper {
     for i in 0..<gTools.count {
         if gTools[i].tool == nil {
-            gArgsSchemas[i] = DefaultDotnetArgs.generationSchema
+            let argumentsJSONSchema = dotnetTool.argumentsJSONSchema
+            print("Allocating tool \(i): \(dotnetTool.toolName) with schema: \(argumentsJSONSchema)")
+            let decoder = JSONDecoder()
+            if let schema = try? decoder.decode(GenerationSchema.self, from: argumentsJSONSchema.data(using: .utf8)!) {
+                print("+ Got schema for tool \(i): \(schema)")
+                gArgsSchemas[i] = schema
+            } else {
+                print("- Using default schema for tool \(i): \(dotnetTool.toolName)")
+                gArgsSchemas[i] = DefaultDotnetArgs.generationSchema
+            }
             gTools[i].tool = dotnetTool
             return gTools[i]
         }
@@ -40,7 +49,7 @@ fileprivate func freeTool(index: Int) {
 public protocol DotnetTool: Sendable {
     var toolName: String { get }
     var toolDescription: String { get }
-    // var argsSchemaProperties: [String] { get }
+    var argumentsJSONSchema: String { get }
     func execute(_ arguments: String, onDone: @escaping (String) -> Void)
 }
 

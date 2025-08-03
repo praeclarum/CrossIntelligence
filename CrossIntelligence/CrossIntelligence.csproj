@@ -35,4 +35,8 @@
     </XcodeProject>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="NJsonSchema" Version="11.4.0" />
+  </ItemGroup>
+
 </Project>

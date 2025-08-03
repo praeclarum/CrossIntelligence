@@ -21,6 +21,7 @@ class DotnetToolProxy : DotnetTool
 
     public override string ToolName => Tool.Name;
     public override string ToolDescription => Tool.Description;
+    public override string ArgumentsJsonSchema => Tool.GetArgumentsJsonSchema();
     public override void Execute(string input, Action<string> onDone)
     {
         // Execute the tool asynchronously and invoke the callback with the result

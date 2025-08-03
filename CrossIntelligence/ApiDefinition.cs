@@ -35,6 +35,10 @@ namespace CrossIntelligence
 		string ToolDescription { get; }
 
 		[Abstract]
+		[Export("argumentsJSONSchema")]
+		string ArgumentsJsonSchema { get; }
+
+		[Abstract]
 		[Export("execute:onDone:")]
 		void Execute(string input, Action<string> onDone);
 	}

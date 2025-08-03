@@ -18,15 +18,20 @@ public partial class MainPage : ContentPage
 		new GuidGenerator()
 	});
 
-	class GuidGenerator : IIntelligenceTool
+	class GuidGenerator : IntelligenceTool<GuidGeneratorArguments>
 	{
-		public string Name => "guidGenerator";
-		public string Description => "A tool that generates GUIDs.";
-		public async Task<string> ExecuteAsync(string input)
+		public override string Name => "guidGenerator";
+		public override string Description => "A tool that generates GUIDs.";
+		public override async Task<string> ExecuteAsync(GuidGeneratorArguments input)
 		{
 			await Task.Delay(1000); // Simulate some async work
 			return $"Guid Generator finished with output: {Guid.NewGuid()}";
 		}
+
+	}
+	class GuidGeneratorArguments
+	{
+		public string Input { get; set; } = string.Empty;
 	}
 
 	readonly ObservableCollection<TranscriptEntry> transcript = new ObservableCollection<TranscriptEntry>();
