@@ -27,7 +27,7 @@ Console.WriteLine(response);
 ## Features
 
 - [x] Access to Apple Intelligence System Language Model
-- [ ] Access to OpenAI Models
+- [x] Access to OpenAI Models
 - [x] Prompt text input
 - [x] Text output
 - [x] System instructions

@@ -14,9 +14,11 @@ class TranscriptEntry
 
 public partial class MainPage : ContentPage
 {
-	readonly IntelligenceSession session = new (tools: [
-		new GuidGenerator()
-	]);
+	readonly IntelligenceSession session = new (
+		model: IntelligenceModel.OpenAI("gpt-4.1", apiKey: "OPENAI_API_KEY"),
+		tools: [
+			new GuidGenerator()
+		]);
 
 	class GuidGenerator : IntelligenceTool<GuidGeneratorArguments>
 	{
