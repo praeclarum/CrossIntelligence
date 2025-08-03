@@ -32,7 +32,7 @@ Console.WriteLine(response);
 - [x] Text output
 - [x] System instructions
 - [x] Chat functionality (session history)
-- [ ] Tool support
+- [x] Tool/function support
 - [ ] Structured output
 
 ## Contributing
