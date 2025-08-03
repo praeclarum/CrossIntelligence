@@ -23,7 +23,15 @@ fileprivate struct DotnetToolWrapper$index$: Tool, DotnetToolWrapper {
     }
     func call(arguments: Arguments) async throws -> ToolOutput {
         let argsJson = "{}"
-        return ToolOutput(tool?.execute(argsJson) ?? "")
+        guard let tool = tool else {
+            throw NSError(domain: "DotnetToolWrapper", code: 0, userInfo: [NSLocalizedDescriptionKey: "Tool is not initialized"])
+        }
+        let result = await withCheckedContinuation { continuation in
+            tool.execute(argsJson) { innerResult in
+                continuation.resume(returning: innerResult as String)
+            }
+        }
+        return ToolOutput(result)
     }
 }
 """

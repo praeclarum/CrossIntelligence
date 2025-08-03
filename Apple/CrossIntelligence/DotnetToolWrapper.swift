@@ -11,7 +11,7 @@ import FoundationModels
 @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
 @Generable
 struct DefaultDotnetArgs {
-    
+    var input: String
 }
 
 protocol DotnetToolWrapper {
@@ -41,7 +41,7 @@ public protocol DotnetTool: Sendable {
     var toolName: String { get }
     var toolDescription: String { get }
     // var argsSchemaProperties: [String] { get }
-    func execute(_ arguments: String) -> String
+    func execute(_ arguments: String, onDone: @escaping (String) -> Void)
 }
 
 @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)

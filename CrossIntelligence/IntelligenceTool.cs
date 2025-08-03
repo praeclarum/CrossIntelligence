@@ -4,5 +4,5 @@ public interface IIntelligenceTool
 {
     string Name { get; }
     string Description { get; }
-    string Execute(string input);
+    Task<string> ExecuteAsync(string input);
 }

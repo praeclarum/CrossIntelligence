@@ -21,6 +21,23 @@ class DotnetToolProxy : DotnetTool
 
     public override string ToolName => Tool.Name;
     public override string ToolDescription => Tool.Description;
+    public override void Execute(string input, Action<string> onDone)
+    {
+        // Execute the tool asynchronously and invoke the callback with the result
+        Task.Run(async () =>
+        {
+            try
+            {
+                var result = await Tool.ExecuteAsync(input);
+                onDone(result);
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions and pass an error message if needed
+                onDone($"Error executing tool: {ex.Message}");
+            }
+        });
+    }
 }
 
 public class AppleIntelligenceSessionImplementation : IIntelligenceSessionImplementation

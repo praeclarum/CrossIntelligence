@@ -26,7 +26,7 @@
             </Grid.ColumnDefinitions>
             <Editor
                 x:Name="PromptEditor"
-                Text="What is the meaning of life?"
+                Text="Call the guidGenerator tool with the input Hello World! and report its output"
                 Placeholder="Type your message here..."
                 Grid.Column="0"/>
             <Button

@@ -15,14 +15,18 @@ class TranscriptEntry
 public partial class MainPage : ContentPage
 {
 	readonly IntelligenceSession session = new IntelligenceSession(new[] {
-		new TestTool()
+		new GuidGenerator()
 	});
 
-	class TestTool : IIntelligenceTool
+	class GuidGenerator : IIntelligenceTool
 	{
-		public string Name => "testTool";
-		public string Description => "A test tool for demonstration purposes.";
-		public string Execute(string input) => $"Executed Test Tool with input: {input}";
+		public string Name => "guidGenerator";
+		public string Description => "A tool that generates GUIDs.";
+		public async Task<string> ExecuteAsync(string input)
+		{
+			await Task.Delay(1000); // Simulate some async work
+			return $"Guid Generator finished with output: {Guid.NewGuid()}";
+		}
 	}
 
 	readonly ObservableCollection<TranscriptEntry> transcript = new ObservableCollection<TranscriptEntry>();

@@ -35,8 +35,8 @@ namespace CrossIntelligence
 		string ToolDescription { get; }
 
 		[Abstract]
-		[Export("execute:")]
-		string Execute(string input);
+		[Export("execute:onDone:")]
+		void Execute(string input, Action<string> onDone);
 	}
 }
 
