@@ -100,11 +100,28 @@ public class AppleIntelligenceSessionImplementation : IIntelligenceSessionImplem
 
     public void Dispose()
     {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
         if (!disposed)
         {
+            if (disposing)
+            {
+                // Dispose managed resources
+                sessionNative?.FreeTools();
+            }
+            // Free unmanaged resources if any
             sessionNative?.FreeTools();
             disposed = true;
         }
+    }
+
+    ~AppleIntelligenceSessionImplementation()
+    {
+        Dispose(false);
     }
 }
 #endif

@@ -13,6 +13,7 @@ public interface IIntelligenceSessionImplementation : IDisposable
 public class IntelligenceSession : IDisposable
 {
     readonly IIntelligenceSessionImplementation implementation;
+    private bool disposed = false;
 
     public IntelligenceSession(IIntelligenceSessionImplementation implementation)
     {
@@ -60,6 +61,25 @@ public class IntelligenceSession : IDisposable
 
     public void Dispose()
     {
-        implementation?.Dispose();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                // Dispose managed resources
+                implementation?.Dispose();
+            }
+            disposed = true;
+        }
+    }
+
+    ~IntelligenceSession()
+    {
+        Dispose(false);
     }
 }
