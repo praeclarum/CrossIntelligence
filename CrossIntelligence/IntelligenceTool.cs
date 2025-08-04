@@ -1,7 +1,3 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
-using Newtonsoft.Json.Schema.Generation;
-
 namespace CrossIntelligence;
 
 public interface IIntelligenceTool
@@ -33,12 +29,7 @@ public abstract class IntelligenceTool<T> : IIntelligenceTool
 
     public virtual string GetArgumentsJsonSchema()
     {
-        var generator = new JSchemaGenerator();
-        JSchema schema = generator.Generate(typeof(T));
-        schema.AllowAdditionalProperties = false;
-        var sw = new StringWriter();
-        schema.WriteTo(new JsonTextWriter(sw));
-        return sw.ToString();
+        return typeof(T).GetJsonSchema();
     }
 
     public virtual string GetOutputJsonSchema()

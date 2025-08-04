@@ -21,10 +21,12 @@ public class TranscriptEntry : NSObject
 
 protocol IntelligenceSessionImplementation {
     func respond(to prompt: String) async throws -> String
+    @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
+    func respond(to prompt: String, schema: GenerationSchema, includeSchemaInPrompt: Bool) async throws -> GeneratedContent
 }
 
 
-@available(iOS 26.0, macOS 26.0, macCatalyst 26.0, *)
+@available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
 class AppleIntelligenceSession: IntelligenceSessionImplementation {
     let session: LanguageModelSession
     init(tools: [any Tool & DotnetToolWrapper], instructions: String?) {
@@ -32,6 +34,10 @@ class AppleIntelligenceSession: IntelligenceSessionImplementation {
     }
     func respond(to prompt: String) async throws -> String {
         let response = try await session.respond(to: prompt)
+        return response.content
+    }
+    func respond(to prompt: String, schema: GenerationSchema, includeSchemaInPrompt: Bool) async throws -> GeneratedContent {
+        let response = try await session.respond(to: prompt, schema: schema, includeSchemaInPrompt: includeSchemaInPrompt)
         return response.content
     }
 }
@@ -43,7 +49,7 @@ public class AppleIntelligenceSessionNative : NSObject
     
     @objc
     public init(instructions: String?, dotnetTools: [DotnetTool]) {
-        if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, *) {
+        if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *) {
             print("GOT TOOLS:")
             for dt in dotnetTools {
                 print("  \(dt.toolName): \(dt.toolDescription)")
@@ -59,7 +65,7 @@ public class AppleIntelligenceSessionNative : NSObject
     
     @objc
     public static var isAppleIntelligenceAvailable: Bool {
-        if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, *) {
+        if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *) {
             return SystemLanguageModel.default.isAvailable
         } else {
             return false
@@ -75,12 +81,37 @@ public class AppleIntelligenceSessionNative : NSObject
                     onComplete(response, nil)
                 }
                 catch {
-                    let error = NSError(domain: "IntelligenceSessionError", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to respond to prompt: \(error.localizedDescription)"])
+                    let error = NSError(domain: "AppleIntelligenceSession", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to respond to prompt: \(error.localizedDescription)"])
                     onComplete("", error)
                 }
             }
         } else {
-            let error = NSError(domain: "IntelligenceSessionError", code: 1, userInfo: [NSLocalizedDescriptionKey: "Apple Intelligence is not available on this version of iOS."])
+            let error = NSError(domain: "AppleIntelligenceSession", code: 1, userInfo: [NSLocalizedDescriptionKey: "Apple Intelligence is not available."])
+            onComplete("", error)
+        }
+    }
+    
+    @objc
+    public func respond(_ prompt: String, jsonSchema: String, includeSchemaInPrompt: Bool, onComplete: @escaping (String, NSError?) -> Void) {
+        if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *), let implementation {
+            Task.detached {
+                if let schema = parseJsonSchema(jsonSchema) {
+                    do {
+                        let responseObject = try await implementation.respond(to: prompt, schema: schema, includeSchemaInPrompt: includeSchemaInPrompt)
+                        onComplete(responseObject.json, nil)
+                    }
+                    catch {
+                        let error = NSError(domain: "AppleIntelligenceSession", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to respond to prompt: \(error.localizedDescription)"])
+                        onComplete("", error)
+                    }
+                }
+                else {
+                    let error = NSError(domain: "AppleIntelligenceSession", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to parse schema"])
+                    onComplete("", error)
+                }
+            }
+        } else {
+            let error = NSError(domain: "AppleIntelligenceSession", code: 1, userInfo: [NSLocalizedDescriptionKey: "Apple Intelligence is not available."])
             onComplete("", error)
         }
     }

@@ -26,7 +26,7 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
     private readonly string apiKey;
     private readonly IIntelligenceTool[] tools;
     private readonly HttpClient httpClient;
-    private readonly List<Message> transcript = new ();
+    private readonly List<Message> transcript = new();
 
     public OpenAIIntelligenceSessionImplementation(string model, string apiKey, IIntelligenceTool[]? tools, string instructions, HttpClient? httpClient = null)
     {
@@ -45,7 +45,17 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
         }
     }
 
-    public async Task<string> RespondAsync(string prompt)
+    public Task<string> RespondAsync(string prompt)
+    {
+        return InternalRespondAsync(prompt, null);
+    }
+
+    public Task<string> RespondAsync(string prompt, Type responseType)
+    {
+        return InternalRespondAsync(prompt, responseType);
+    }
+
+    async Task<string> InternalRespondAsync(string prompt, Type? responseType)
     {
         var userMessage = new InputContentMessage
         {

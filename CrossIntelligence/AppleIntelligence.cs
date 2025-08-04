@@ -58,7 +58,7 @@ public class AppleIntelligenceSessionImplementation : IIntelligenceSessionImplem
 
         sessionNative.Respond(prompt, (response, error) =>
         {
-            if (error != null)
+            if (error is not null)
             {
                 tcs.SetException(new Exception(error.LocalizedDescription));
             }
@@ -68,6 +68,32 @@ public class AppleIntelligenceSessionImplementation : IIntelligenceSessionImplem
             }
         });
 
+        return tcs.Task;
+    }
+
+    public Task<string> RespondAsync(string prompt, Type responseType)
+    {
+        var tcs = new TaskCompletionSource<string>();
+        try
+        {
+            var schema = responseType.GetJsonSchema();
+
+            sessionNative.Respond(prompt, schema, includeSchemaInPrompt: true, (response, error) =>
+            {
+                if (error is not null)
+                {
+                    tcs.SetException(new Exception(error.LocalizedDescription));
+                }
+                else
+                {
+                    tcs.SetResult(response);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            tcs.SetException(ex);
+        }
         return tcs.Task;
     }
 }

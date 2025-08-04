@@ -1,8 +1,13 @@
+using System.Text.Json.Serialization;
+
+using Newtonsoft.Json;
+
 namespace CrossIntelligence;
 
 public interface IIntelligenceSessionImplementation
 {
     Task<string> RespondAsync(string prompt);
+    Task<string> RespondAsync(string prompt, Type responseType);
 }
 
 public class IntelligenceSession
@@ -34,7 +39,22 @@ public class IntelligenceSession
 
     public Task<string> RespondAsync(string prompt)
     {
-        // Call the implementation's method to get a response
         return implementation.RespondAsync(prompt);
+    }
+
+    public async Task<object> RespondAsync(string prompt, Type responseType)
+    {
+        var json = await implementation.RespondAsync(prompt, responseType).ConfigureAwait(false);
+        if (JsonConvert.DeserializeObject(json, responseType) is { } result)
+        {
+            return result;
+        }
+        throw new Exception($"Failed to deserialize response to type: {responseType.Name}. Response: {json}");
+    }
+
+    public async Task<T> RespondAsync<T>(string prompt)
+    {
+        var r = await RespondAsync(prompt, typeof(T)).ConfigureAwait(false);
+        return (T)r;
     }
 }

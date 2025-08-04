@@ -64,6 +64,12 @@ public partial class MainPage : ContentPage
 		BindingContext = this;
 	}
 
+	class MyStructuredOutput
+	{
+		public required string Name { get; set; }
+		public required int Age { get; set; }
+	}
+
 	private async void OnIntelligenceClicked(object? sender, EventArgs e)
 	{
 		if (!IntelligenceSession.IsAppleIntelligenceAvailable)
@@ -82,8 +88,8 @@ public partial class MainPage : ContentPage
 		try
 		{
 			transcript.Add(new TranscriptEntry { Text = prompt, IsUser = true });
-			var response = await session.RespondAsync(prompt);
-			transcript.Add(new TranscriptEntry { Text = response, IsUser = false });
+			var response = await session.RespondAsync<MyStructuredOutput>(prompt);
+			transcript.Add(new TranscriptEntry { Text = response.ToString(), IsUser = false });
 			PromptEditor.Text = string.Empty;
 		}
 		catch (Exception ex)
