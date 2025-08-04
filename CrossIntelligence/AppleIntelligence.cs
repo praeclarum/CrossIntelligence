@@ -44,6 +44,7 @@ class DotnetToolProxy : DotnetTool
 public class AppleIntelligenceSessionImplementation : IIntelligenceSessionImplementation
 {
     private readonly AppleIntelligenceSessionNative sessionNative;
+    private bool disposed = false;
 
     public AppleIntelligenceSessionImplementation(string instructions, IIntelligenceTool[]? tools)
     {
@@ -95,6 +96,15 @@ public class AppleIntelligenceSessionImplementation : IIntelligenceSessionImplem
             tcs.SetException(ex);
         }
         return tcs.Task;
+    }
+
+    public void Dispose()
+    {
+        if (!disposed)
+        {
+            sessionNative?.FreeTools();
+            disposed = true;
+        }
     }
 }
 #endif

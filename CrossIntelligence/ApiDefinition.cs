@@ -25,6 +25,9 @@ namespace CrossIntelligence
 		[Export("respond:jsonSchema:includeSchemaInPrompt:onComplete:")]
 		[Async]
 		void Respond(string input, string jsonSchema, bool includeSchemaInPrompt, IntelligenceResponseHandler onComplete);
+
+		[Export("freeTools")]
+		void FreeTools();
 	}
 
 	[BaseType (typeof (NSObject))]

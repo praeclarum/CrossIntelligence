@@ -4,13 +4,13 @@ using Newtonsoft.Json;
 
 namespace CrossIntelligence;
 
-public interface IIntelligenceSessionImplementation
+public interface IIntelligenceSessionImplementation : IDisposable
 {
     Task<string> RespondAsync(string prompt);
     Task<string> RespondAsync(string prompt, Type responseType);
 }
 
-public class IntelligenceSession
+public class IntelligenceSession : IDisposable
 {
     readonly IIntelligenceSessionImplementation implementation;
 
@@ -56,5 +56,10 @@ public class IntelligenceSession
     {
         var r = await RespondAsync(prompt, typeof(T)).ConfigureAwait(false);
         return (T)r;
+    }
+
+    public void Dispose()
+    {
+        implementation?.Dispose();
     }
 }
