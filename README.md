@@ -35,6 +35,60 @@ Console.WriteLine(response);
 - [x] Tool/function support
 - [x] Structured output
 
+### Structured Output
+
+You can define a structured output by creating a class with properties that match the expected output format. The library will automatically deserialize the response into your class.
+
+```csharp
+class NonPlayerCharacter
+{
+    public required string Name { get; set; }
+    public required int Age { get; set; }
+    public required string Occupation { get; set; }
+}
+
+var session = new IntelligenceSession();
+var response = await session.RespondAsync<NonPlayerCharacter>("Generate a random NPC with a name, age, and occupation.");
+Console.WriteLine($"Name: {response.Name}, Age: {response.Age}, Occupation: {response.Occupation}");
+```
+
+### Tools (Functions)
+
+You can define tools (functions) that the LLM can call to perform specific tasks. Define a class the inherits from `IntelligenceTool` and implement the `ExecuteAsync` method. Tools take arguments that are specified using a generic type parameter.
+
+```csharp
+class AddPlayerTool : IntelligenceTool<NonPlayerCharacter>
+{
+    private GameDatabase gameDatabase;
+    public AddPlayerTool(GameDatabase gameDatabase)
+    {
+        this.gameDatabase = gameDatabase;
+    }
+    public override string Name => "AddPlayer";
+    public override string Description => "Adds a new non-player character (NPC) to the game.";
+    public override async Task<string> ExecuteAsync(NonPlayerCharacter npc)
+    {
+        await gameDatabase.AddPlayerAsync(npc);
+        return $"Added NPC: {npc.Name}.";
+    }
+}
+
+var gameDatabase = new GameDatabase();
+var session = new IntelligenceSession(tools: [new AddPlayerTool(gameDatabase)]);
+var response = await session.RespondAsync("Add 3 new NPCs to the game.");
+Console.WriteLine(response);
+```
+
+### Calling External Models
+
+You can use other models than the default system model by passing in the `model` parameter when creating the `IntelligenceSession`.
+
+```csharp
+var session = new IntelligenceSession(model: IntelligenceModel.OpenAI("gpt-4.1", apiKey: "OPENAI_API_KEY"));
+var response = await session.RespondAsync("What is the meaning of life?");
+Console.WriteLine(response);
+```
+
 ## Contributing
 
 If you'd like to contribute to the CrossIntelligence library, please fork the repository and submit a pull request.
