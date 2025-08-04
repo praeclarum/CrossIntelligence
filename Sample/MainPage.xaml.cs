@@ -14,11 +14,24 @@ class TranscriptEntry
 
 public partial class MainPage : ContentPage
 {
-	readonly IntelligenceSession session = new (
-		model: IntelligenceModel.OpenAI("gpt-4.1", apiKey: "OPENAI_API_KEY"),
-		tools: [
-			new GuidGenerator()
-		]);
+	const string openAIApiKey = "OPENAI_API_KEY"; // Replace with your OpenAI API key
+
+	bool useAppleIntelligence = IntelligenceSession.IsAppleIntelligenceAvailable;
+	public bool UseAppleIntelligence
+	{
+		get => useAppleIntelligence;
+		set
+		{
+			useAppleIntelligence = value;
+			OnPropertyChanged(nameof(UseAppleIntelligence));
+			session = new(
+				model: useAppleIntelligence ? IntelligenceModel.AppleIntelligence : IntelligenceModel.OpenAI("gpt-4.1", apiKey: openAIApiKey),
+				tools: [
+					new GuidGenerator()
+				]);
+		}
+	}
+	IntelligenceSession session;
 
 	class GuidGenerator : IntelligenceTool<GuidGeneratorArguments>
 	{
@@ -42,7 +55,13 @@ public partial class MainPage : ContentPage
 	public MainPage()
 	{
 		InitializeComponent();
+		session = new(
+			model: useAppleIntelligence ? IntelligenceModel.AppleIntelligence : IntelligenceModel.OpenAI("gpt-4.1", apiKey: openAIApiKey),
+			tools: [
+				new GuidGenerator()
+			]);
 		TranscriptList.ItemsSource = transcript;
+		BindingContext = this;
 	}
 
 	private async void OnIntelligenceClicked(object? sender, EventArgs e)

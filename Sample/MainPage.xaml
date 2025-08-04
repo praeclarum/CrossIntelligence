@@ -23,17 +23,21 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Editor
                 x:Name="PromptEditor"
                 Text="Call the guidGenerator tool with the input Hello World! and report its output"
                 Placeholder="Type your message here..."
                 Grid.Column="0"/>
+            <Switch
+                IsToggled="{Binding UseAppleIntelligence}"
+                Grid.Column="1" />
             <Button
                 x:Name="IntelligenceBtn"
                 Text="Run"
                 Clicked="OnIntelligenceClicked"
-                Grid.Column="1"/>
+                Grid.Column="2"/>
         </Grid>
     </Grid>
 
