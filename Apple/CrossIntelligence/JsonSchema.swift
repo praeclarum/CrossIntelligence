@@ -34,6 +34,8 @@ fileprivate func readDynamicJsonSchema(_ schema: JsonSchema) -> DynamicGeneratio
         switch schema.type {
         case "string":
             return DynamicGenerationSchema(type: String.self)
+        case "integer":
+            return DynamicGenerationSchema(type: Int.self)
         default:
             print("Unsupported JSON schema type: \(schema.type)")
             return nil

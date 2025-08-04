@@ -12,7 +12,6 @@ import FoundationModels
 extension GeneratedContent {
     var json: String {
         if let properties = try? properties() {
-            print("Generating JSON from properties: \(properties)")
             var jsonDict = ["{"]
             var head = ""
             for (key, value) in properties {
@@ -25,16 +24,24 @@ extension GeneratedContent {
             return jsonDict.joined()
         }
         else if let str = try? value(String.self) {
-            print("Generating JSON from string: \(str)")
             if let jsonData = try? JSONSerialization.data(withJSONObject: str, options: .fragmentsAllowed),
                let json = String(data: jsonData, encoding: .utf8) {
                 return json
             } else {
                 print("Failed to serialize JSON data from string")
-                return "{}"
+                return "\"\""
+            }
+        }
+        else if let integer = try? value(Int.self) {
+            if let jsonData = try? JSONSerialization.data(withJSONObject: integer, options: .fragmentsAllowed),
+               let json = String(data: jsonData, encoding: .utf8) {
+                return json
+            } else {
+                print("Failed to serialize JSON data from integer")
+                return "0"
             }
         }
         print("Unable to generate JSON from \(self)")
-        return ""
+        return "null"
     }
 }

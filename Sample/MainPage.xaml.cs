@@ -68,6 +68,8 @@ public partial class MainPage : ContentPage
 	{
 		public required string Name { get; set; }
 		public required int Age { get; set; }
+		public required string Guid { get; set; }
+		public override string ToString() => $"Structured: Name={Name}, Age={Age}, Guid={Guid}";
 	}
 
 	private async void OnIntelligenceClicked(object? sender, EventArgs e)

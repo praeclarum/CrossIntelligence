@@ -50,10 +50,6 @@ public class AppleIntelligenceSessionNative : NSObject
     @objc
     public init(instructions: String?, dotnetTools: [DotnetTool]) {
         if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *) {
-            print("GOT TOOLS:")
-            for dt in dotnetTools {
-                print("  \(dt.toolName): \(dt.toolDescription)")
-            }
             let tools = allocTools(dotnetTools: dotnetTools)
             implementation = AppleIntelligenceSession(tools: tools, instructions: instructions)
         }

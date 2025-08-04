@@ -32,9 +32,7 @@ fileprivate func allocTool(dotnetTool: DotnetTool) -> any Tool & DotnetToolWrapp
     for i in 0..<gTools.count {
         if gTools[i].tool == nil {
             let argumentsJSONSchema = dotnetTool.argumentsJSONSchema
-            print("Allocating tool \(i): \(dotnetTool.toolName) with schema: \(argumentsJSONSchema)")
             if let schema = parseJsonSchema(argumentsJSONSchema) {
-                print("+ Got schema for tool \(i): \(schema)")
                 gArgsSchemas[i] = schema
             } else {
                 print("- Using default schema for tool \(i): \(dotnetTool.toolName)")
