@@ -12,11 +12,37 @@ class TranscriptEntry
 	public required bool IsUser { get; set; }
 }
 
+class GuidGenerator : IntelligenceTool<GuidGeneratorArguments>
+{
+	public override string Name => "guidGenerator";
+	public override string Description => "A tool that generates GUIDs.";
+	public override async Task<string> ExecuteAsync(GuidGeneratorArguments input)
+	{
+		await Task.Delay(1000); // Simulate some async work
+		var guid = Guid.NewGuid();
+		return $"Guid Generator finished with output: {guid}";
+	}
+}
+
+class GuidGeneratorArguments
+{
+	public string Input { get; set; } = string.Empty;
+}
+
+class StructuredOutput
+{
+	public required string Response { get; set; }
+	public required string Guid { get; set; }
+	public override string ToString() => $"Structured: Response={Response}, Guid={Guid}";
+}
+
 public partial class MainPage : ContentPage
 {
 	const string openAIApiKey = "OPENAI_API_KEY"; // Replace with your OpenAI API key
-
+	IntelligenceSession session;
+	readonly ObservableCollection<TranscriptEntry> transcript = new ObservableCollection<TranscriptEntry>();
 	bool useAppleIntelligence = IntelligenceSession.IsAppleIntelligenceAvailable;
+
 	public bool UseAppleIntelligence
 	{
 		get => useAppleIntelligence;
@@ -31,26 +57,6 @@ public partial class MainPage : ContentPage
 				]);
 		}
 	}
-	IntelligenceSession session;
-
-	class GuidGenerator : IntelligenceTool<GuidGeneratorArguments>
-	{
-		public override string Name => "guidGenerator";
-		public override string Description => "A tool that generates GUIDs.";
-		public override async Task<string> ExecuteAsync(GuidGeneratorArguments input)
-		{
-			await Task.Delay(1000); // Simulate some async work
-			var guid = Guid.NewGuid();
-			return $"Guid Generator finished with output: {guid}";
-		}
-	}
-
-	class GuidGeneratorArguments
-	{
-		public string Input { get; set; } = string.Empty;
-	}
-
-	readonly ObservableCollection<TranscriptEntry> transcript = new ObservableCollection<TranscriptEntry>();
 
 	public MainPage()
 	{
@@ -62,14 +68,6 @@ public partial class MainPage : ContentPage
 			]);
 		TranscriptList.ItemsSource = transcript;
 		BindingContext = this;
-	}
-
-	class MyStructuredOutput
-	{
-		public required string Name { get; set; }
-		public required int Age { get; set; }
-		public required string Guid { get; set; }
-		public override string ToString() => $"Structured: Name={Name}, Age={Age}, Guid={Guid}";
 	}
 
 	private async void OnIntelligenceClicked(object? sender, EventArgs e)
@@ -90,7 +88,7 @@ public partial class MainPage : ContentPage
 		try
 		{
 			transcript.Add(new TranscriptEntry { Text = prompt, IsUser = true });
-			var response = await session.RespondAsync<MyStructuredOutput>(prompt);
+			var response = await session.RespondAsync<StructuredOutput>(prompt);
 			transcript.Add(new TranscriptEntry { Text = response.ToString(), IsUser = false });
 			PromptEditor.Text = string.Empty;
 		}

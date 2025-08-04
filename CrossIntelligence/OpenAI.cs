@@ -25,6 +25,7 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
     private readonly string model;
     private readonly string apiKey;
     private readonly IIntelligenceTool[] tools;
+    private readonly ToolDefinition[] toolDefinitions;
     private readonly HttpClient httpClient;
     private readonly List<Message> transcript = new();
 
@@ -33,6 +34,7 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
         this.model = model;
         this.apiKey = apiKey;
         this.tools = tools ?? Array.Empty<IIntelligenceTool>();
+        this.toolDefinitions = this.tools.Select(tool => ToolDefinition.FromTool(tool)).ToArray();
         this.httpClient = httpClient ?? new HttpClient();
         this.httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
         if (!string.IsNullOrEmpty(instructions))
@@ -63,16 +65,29 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
             Content = [new Content { Type = "input_text", Text = prompt }]
         };
         transcript.Add(userMessage);
-        var artools = tools.Select(tool => ToolDefinition.FromTool(tool)).ToArray();
+        TextOptions? textOptions = null;
+        if (responseType is not null)
+        {
+            var schema = responseType.GetJsonSchemaObject();
+            textOptions = new TextOptions
+            {
+                Format = new TextFormat
+                {
+                    Type = "json_schema",
+                    Name = responseType.Name,
+                    Schema = schema
+                }
+            };
+        }
         var initialRequest = new ResponsesRequest
         {
             Model = model,
             Input = transcript.ToArray(),
-            Tools = artools
+            Tools = toolDefinitions,
+            TextOptions = textOptions
         };
         var response = await GetResponseAsync(initialRequest).ConfigureAwait(false);
         var toolResults = new List<FunctionCallOutputMessage>();
-        transcript.Add(userMessage);
         do
         {
             toolResults.Clear();
@@ -86,25 +101,38 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
                         Role = output.Role,
                         Content = output.Content
                     };
-                    transcript.Add(m);
                 }
                 else if (output.Type == "function_call")
                 {
                     var toolName = output.Name;
-                    var result = "Unknown function.";
+                    var result = "";
                     var tool = tools.FirstOrDefault(t => t.Name == toolName);
-                    if (tool != null)
+                    try
                     {
-                        result = await tool.ExecuteAsync(output.Arguments ?? "").ConfigureAwait(false);
+                        if (tool is not null)
+                        {
+                            result = await tool.ExecuteAsync(output.Arguments ?? "").ConfigureAwait(false);
+                        }
+                        else
+                        {
+                            result = $"Function '{toolName}' not found.";
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        result = $"Error: {ex.Message}";
                     }
                     var m = new FunctionCallOutputMessage
                     {
                         CallId = output.CallId ?? "",
                         Output = result
                     };
-                    transcript.Add(m);
                     toolResults.Add(m);
                 }
+            }
+            foreach (var toolResult in toolResults)
+            {
+                transcript.Add(toolResult);
             }
             if (toolResults.Count > 0)
             {
@@ -112,13 +140,39 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
                 {
                     Model = model,
                     Input = transcript.ToArray(),
-                    Tools = artools
+                    Tools = toolDefinitions,
+                    TextOptions = textOptions
                 };
                 response = await GetResponseAsync(toolOutputRequest).ConfigureAwait(false);
             }
         } while (toolResults.Count > 0);
         var allOutput = string.Join("\n\n", response.Output.Where(t => t.Content != null).SelectMany(m => m.Content ?? Array.Empty<Content>()).Select(c => c.Text));
         return allOutput;
+    }
+
+    async Task<ResponsesResponse> GetResponseAsync(ResponsesRequest request)
+    {
+        JsonSerializerSettings settings = new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Formatting.Indented
+        };
+        var json = JsonConvert.SerializeObject(request, settings);
+        var requestContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+        var response = await httpClient.PostAsync($"https://api.openai.com/v1/responses", requestContent).ConfigureAwait(false);
+        var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new HttpRequestException($"OpenAI API request failed with status code {response.StatusCode} ({(int)response.StatusCode}): {responseBody}");
+        }
+
+        var responseData = JsonConvert.DeserializeObject<ResponsesResponse>(responseBody);
+        if (responseData == null || responseData.Output.Length == 0)
+        {
+            throw new InvalidOperationException("Invalid response from OpenAI API.");
+        }
+        return responseData;
     }
 
     class ResponsesRequest
@@ -129,6 +183,8 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
         public Message[] Input { get; set; } = Array.Empty<Message>();
         [JsonProperty("tools")]
         public ToolDefinition[] Tools { get; set; } = Array.Empty<ToolDefinition>();
+        [JsonProperty("text")]
+        public TextOptions? TextOptions { get; set; } = null;
     }
 
     class ResponsesResponse
@@ -223,28 +279,19 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
         }
     }
 
-    async Task<ResponsesResponse> GetResponseAsync(ResponsesRequest request)
+    class TextOptions
     {
-        JsonSerializerSettings settings = new JsonSerializerSettings
-        {
-            NullValueHandling = NullValueHandling.Ignore,
-            Formatting = Formatting.Indented // For readable output
-        };
+        [JsonProperty("format")]
+        public TextFormat? Format { get; set; } = null;
+    }
 
-        var json = JsonConvert.SerializeObject(request, settings);
-        Console.WriteLine($"Request JSON: {json}");
-        var requestContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-
-        var response = await httpClient.PostAsync($"https://api.openai.com/v1/responses", requestContent).ConfigureAwait(false);
-        var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        System.Console.WriteLine(responseBody);
-        response.EnsureSuccessStatusCode();
-
-        var responseData = JsonConvert.DeserializeObject<ResponsesResponse>(responseBody);
-        if (responseData == null || responseData.Output.Length == 0)
-        {
-            throw new InvalidOperationException("Invalid response from OpenAI API.");
-        }
-        return responseData;
+    class TextFormat
+    {
+        [JsonProperty("type")]
+        public string Type { get; set; } = "json_schema";
+        [JsonProperty("name")]
+        public string? Name { get; set; } = null;
+        [JsonProperty("schema")]
+        public JSchema? Schema { get; set; } = null;
     }
 }
