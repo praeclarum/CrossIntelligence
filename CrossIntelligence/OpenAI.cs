@@ -26,7 +26,7 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
     private readonly string apiKey;
     private readonly IIntelligenceTool[] tools;
     private readonly HttpClient httpClient;
-    private readonly List<InputMessage> transcript = new List<InputMessage>();
+    private readonly List<Message> transcript = new ();
 
     public OpenAIIntelligenceSessionImplementation(string model, string apiKey, IIntelligenceTool[]? tools, string instructions, HttpClient? httpClient = null)
     {
@@ -52,6 +52,7 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
             Role = "user",
             Content = [new Content { Type = "input_text", Text = prompt }]
         };
+        transcript.Add(userMessage);
         var rtools = new List<ToolDefinition>();
         foreach (var tool in tools)
         {
@@ -61,7 +62,7 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
         var initialRequest = new ResponsesRequest
         {
             Model = model,
-            Input = transcript.Concat(new[] { userMessage }).ToArray(),
+            Input = transcript.ToArray(),
             Tools = artools
         };
         var response = await GetResponseAsync(initialRequest).ConfigureAwait(false);
@@ -72,13 +73,15 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
             toolResults.Clear();
             foreach (var output in response.Output)
             {
+                transcript.Add(output);
                 if (output.Type == "message")
                 {
-                    transcript.Add(new InputContentMessage
+                    var m = new InputContentMessage
                     {
                         Role = output.Role,
                         Content = output.Content
-                    });
+                    };
+                    transcript.Add(m);
                 }
                 else if (output.Type == "function_call")
                 {
@@ -89,15 +92,13 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
                     {
                         result = await tool.ExecuteAsync(output.Arguments ?? "").ConfigureAwait(false);
                     }
-                    toolResults.Add(new FunctionCallOutputMessage
+                    var m = new FunctionCallOutputMessage
                     {
                         CallId = output.CallId ?? "",
                         Output = result
-                    });
-                }
-                else
-                {
-                    // throw new InvalidOperationException($"Unknown output type: {output.Type}");
+                    };
+                    transcript.Add(m);
+                    toolResults.Add(m);
                 }
             }
             if (toolResults.Count > 0)
@@ -105,8 +106,8 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
                 var toolOutputRequest = new ResponsesRequest
                 {
                     Model = model,
-                    Input = toolResults.ToArray(),
-                    Tools = rtools.ToArray()
+                    Input = transcript.ToArray(),
+                    Tools = artools
                 };
                 response = await GetResponseAsync(toolOutputRequest).ConfigureAwait(false);
             }
@@ -120,7 +121,7 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
         [JsonProperty("model")]
         public string Model { get; set; } = string.Empty;
         [JsonProperty("input")]
-        public InputMessage[] Input { get; set; } = Array.Empty<InputMessage>();
+        public Message[] Input { get; set; } = Array.Empty<Message>();
         [JsonProperty("tools")]
         public ToolDefinition[] Tools { get; set; } = Array.Empty<ToolDefinition>();
     }
@@ -164,9 +165,9 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
     class OutputMessage : Message
     {
         [JsonProperty("role")]
-        public string Role { get; set; } = string.Empty;
+        public string? Role { get; set; } = null;
         [JsonProperty("content")]
-        public Content[] Content { get; set; } = Array.Empty<Content>();
+        public Content[]? Content { get; set; } = null;
         [JsonProperty("status")]
         public string? Status { get; set; } = null;
         [JsonProperty("call_id")]
@@ -220,7 +221,13 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
 
     async Task<ResponsesResponse> GetResponseAsync(ResponsesRequest request)
     {
-        var json = JsonConvert.SerializeObject(request, Formatting.Indented);
+        JsonSerializerSettings settings = new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            Formatting = Formatting.Indented // For readable output
+        };
+
+        var json = JsonConvert.SerializeObject(request, settings);
         Console.WriteLine($"Request JSON: {json}");
         var requestContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 

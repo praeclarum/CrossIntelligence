@@ -27,7 +27,8 @@ public partial class MainPage : ContentPage
 		public override async Task<string> ExecuteAsync(GuidGeneratorArguments input)
 		{
 			await Task.Delay(1000); // Simulate some async work
-			return $"Guid Generator finished with output: {Guid.NewGuid()}";
+			var guid = Guid.NewGuid();
+			return $"Guid Generator finished with output: {guid}";
 		}
 	}
 
