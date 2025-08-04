@@ -3,7 +3,7 @@
     <TargetFrameworks>net9.0;net9.0-android;net9.0-ios;net9.0-macos;net9.0-maccatalyst</TargetFrameworks>
 
     <PackageId>CrossIntelligence</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <Authors>praeclarum</Authors>
     <Company>Krueger Systems, Inc.</Company>
     <PackageTags>ai,llm,maui,intelligence,apple,ios,maccatalyst,macos,android</PackageTags>
@@ -13,6 +13,7 @@
     <ImplicitUsings>true</ImplicitUsings>
     <IsBindingProject>true</IsBindingProject>
     <IsTrimmable>true</IsTrimmable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">13.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos'">10.15</SupportedOSPlatformVersion>

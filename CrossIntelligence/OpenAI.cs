@@ -53,12 +53,7 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
             Content = [new Content { Type = "input_text", Text = prompt }]
         };
         transcript.Add(userMessage);
-        var rtools = new List<ToolDefinition>();
-        foreach (var tool in tools)
-        {
-            rtools.Add(await ToolDefinition.FromToolAsync(tool).ConfigureAwait(false));
-        }
-        var artools = rtools.ToArray();
+        var artools = tools.Select(tool => ToolDefinition.FromTool(tool)).ToArray();
         var initialRequest = new ResponsesRequest
         {
             Model = model,
@@ -112,7 +107,7 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
                 response = await GetResponseAsync(toolOutputRequest).ConfigureAwait(false);
             }
         } while (toolResults.Count > 0);
-        var allOutput = string.Join("\n\n", response.Output.SelectMany(m => m.Content).Select(c => c.Text).Where(t => !string.IsNullOrEmpty(t)));
+        var allOutput = string.Join("\n\n", response.Output.Where(t => t.Content != null).SelectMany(m => m.Content ?? Array.Empty<Content>()).Select(c => c.Text));
         return allOutput;
     }
 
@@ -145,17 +140,17 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
     class InputContentMessage : InputMessage
     {
         [JsonProperty("role")]
-        public string Role { get; set; } = string.Empty;
+        public string? Role { get; set; } = null;
         [JsonProperty("content")]
-        public Content[] Content { get; set; } = Array.Empty<Content>();
+        public Content[]? Content { get; set; } = null;
     }
 
     class FunctionCallOutputMessage : InputMessage
     {
         [JsonProperty("call_id")]
-        public string CallId { get; set; } = string.Empty;
+        public string? CallId { get; set; } = null;
         [JsonProperty("output")]
-        public string Output { get; set; } = string.Empty;
+        public string? Output { get; set; } = null;
         public FunctionCallOutputMessage()
         {
             Type = "function_call_output";
@@ -204,7 +199,7 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
         [JsonProperty("parameters")]
         public JSchema? Parameters { get; set; }
 
-        public static async Task<ToolDefinition> FromToolAsync(IIntelligenceTool tool)
+        public static ToolDefinition FromTool(IIntelligenceTool tool)
         {
             var definition = new ToolDefinition
             {
@@ -212,7 +207,6 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
                 Description = tool.Description,
             };
             var schemaString = tool.GetArgumentsJsonSchema();
-            Console.WriteLine($"Tool {tool.Name} schema: {schemaString}");
             var ps = JSchema.Parse(schemaString);
             definition.Parameters = ps;
             return definition;
