@@ -111,9 +111,8 @@ public class AppleIntelligenceSessionImplementation : IIntelligenceSessionImplem
             if (disposing)
             {
                 // Dispose managed resources
-                sessionNative?.FreeTools();
             }
-            // Free unmanaged resources if any
+            // Free unmanaged resources
             sessionNative?.FreeTools();
             disposed = true;
         }
