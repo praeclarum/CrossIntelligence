@@ -50,11 +50,13 @@ public partial class MainPage : ContentPage
 		{
 			useAppleIntelligence = value;
 			OnPropertyChanged(nameof(UseAppleIntelligence));
+			var oldSession = session;
 			session = new(
 				model: useAppleIntelligence ? IntelligenceModel.AppleIntelligence : IntelligenceModel.OpenAI("gpt-4.1", apiKey: openAIApiKey),
 				tools: [
 					new GuidGenerator()
 				]);
+			oldSession.Dispose();
 		}
 	}
 

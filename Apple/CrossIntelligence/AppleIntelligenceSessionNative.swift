@@ -23,13 +23,16 @@ protocol IntelligenceSessionImplementation {
     func respond(to prompt: String) async throws -> String
     @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
     func respond(to prompt: String, schema: GenerationSchema, includeSchemaInPrompt: Bool) async throws -> GeneratedContent
+    func freeTools()
 }
 
 
 @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
 class AppleIntelligenceSession: IntelligenceSessionImplementation {
-    let session: LanguageModelSession
-    init(tools: [any Tool & DotnetToolWrapper], instructions: String?) {
+    private let session: LanguageModelSession
+    private var tools: [any Tool & DotnetToolWrapper] = []
+    init(dotnetTools: [DotnetTool], instructions: String?) {
+        tools = allocDotnetTools(dotnetTools)
         session = LanguageModelSession(tools: tools, instructions: instructions)
     }
     func respond(to prompt: String) async throws -> String {
@@ -40,20 +43,21 @@ class AppleIntelligenceSession: IntelligenceSessionImplementation {
         let response = try await session.respond(to: prompt, schema: schema, includeSchemaInPrompt: includeSchemaInPrompt)
         return response.content
     }
+    public func freeTools() {
+        freeDotnetToolWrappers(tools)
+        tools.removeAll()
+    }
 }
 
 @objc(AppleIntelligenceSessionNative)
 public class AppleIntelligenceSessionNative : NSObject
 {
     private let implementation: IntelligenceSessionImplementation?
-    private var allocatedTools: [any Tool & DotnetToolWrapper] = []
     
     @objc
     public init(instructions: String?, dotnetTools: [DotnetTool]) {
         if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *) {
-            let tools = allocTools(dotnetTools: dotnetTools)
-            allocatedTools = tools
-            implementation = AppleIntelligenceSession(tools: tools, instructions: instructions)
+            implementation = AppleIntelligenceSession(dotnetTools: dotnetTools, instructions: instructions)
         }
         else {
             implementation = nil
@@ -116,9 +120,6 @@ public class AppleIntelligenceSessionNative : NSObject
     
     @objc
     public func freeTools() {
-        if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *) {
-            freeTools(tools: allocatedTools)
-            allocatedTools.removeAll()
-        }
+        implementation?.freeTools()
     }
 }

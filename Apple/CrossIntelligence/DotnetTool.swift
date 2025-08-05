@@ -28,7 +28,7 @@ struct DefaultDotnetArgs {
 }
 
 @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
-fileprivate func allocTool(dotnetTool: DotnetTool) -> any Tool & DotnetToolWrapper {
+fileprivate func allocTool(dotnetTool: DotnetTool) -> (any Tool & DotnetToolWrapper)? {
     for i in 0..<gTools.count {
         if gTools[i].tool == nil {
             let argumentsJSONSchema = dotnetTool.argumentsJSONSchema
@@ -42,23 +42,20 @@ fileprivate func allocTool(dotnetTool: DotnetTool) -> any Tool & DotnetToolWrapp
             return gTools[i]
         }
     }
-    return gTools[gTools.count - 1] // Return the last tool if no free tool is found
+    print("No free tool slot found, \(dotnetTool.toolName) will not be available.")
+    return nil
 }
 
 @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
-func allocTools(dotnetTools: [DotnetTool]) -> [any Tool & DotnetToolWrapper] {
-    let tools = dotnetTools.map { allocTool(dotnetTool: $0) }
+func allocDotnetTools(_ dotnetTools: [DotnetTool]) -> [any Tool & DotnetToolWrapper] {
+    let tools = dotnetTools.compactMap { allocTool(dotnetTool: $0) }
     return tools
 }
 
 @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
-fileprivate func freeTool(index: Int) {
-    gTools[index].tool = nil
-}
-
-@available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
-func freeTools(tools: [any Tool & DotnetToolWrapper]) {
+func freeDotnetToolWrappers(_ tools: [any Tool & DotnetToolWrapper]) {
     for tool in tools {
+        gArgsSchemas[tool.index] = DefaultDotnetArgs.generationSchema
         gTools[tool.index].tool = nil
     }
 }
