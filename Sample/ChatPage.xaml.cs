@@ -24,6 +24,8 @@ public partial class ChatPage : ContentPage
 		get => useAppleIntelligence;
 		set
 		{
+			if (useAppleIntelligence == value)
+				return;
 			useAppleIntelligence = value;
 			OnPropertyChanged(nameof(UseAppleIntelligence));
 			var oldSession = session;
