@@ -1,6 +1,6 @@
 import os
 
-max_tools = 5
+max_tools = 100
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 src_dir = os.path.join(this_dir, "CrossIntelligence")

@@ -44,6 +44,7 @@ class DotnetToolProxy : DotnetTool
 public class AppleIntelligenceSessionImplementation : IIntelligenceSessionImplementation
 {
     private readonly AppleIntelligenceSessionNative sessionNative;
+    private bool disposed = false;
 
     public AppleIntelligenceSessionImplementation(string instructions, IIntelligenceTool[]? tools)
     {
@@ -95,6 +96,31 @@ public class AppleIntelligenceSessionImplementation : IIntelligenceSessionImplem
             tcs.SetException(ex);
         }
         return tcs.Task;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                // Dispose managed resources
+            }
+            // Free unmanaged resources
+            sessionNative?.FreeTools();
+            disposed = true;
+        }
+    }
+
+    ~AppleIntelligenceSessionImplementation()
+    {
+        Dispose(false);
     }
 }
 #endif

@@ -46,11 +46,13 @@ class AppleIntelligenceSession: IntelligenceSessionImplementation {
 public class AppleIntelligenceSessionNative : NSObject
 {
     private let implementation: IntelligenceSessionImplementation?
+    private var allocatedTools: [any Tool & DotnetToolWrapper] = []
     
     @objc
     public init(instructions: String?, dotnetTools: [DotnetTool]) {
         if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *) {
             let tools = allocTools(dotnetTools: dotnetTools)
+            allocatedTools = tools
             implementation = AppleIntelligenceSession(tools: tools, instructions: instructions)
         }
         else {
@@ -109,6 +111,14 @@ public class AppleIntelligenceSessionNative : NSObject
         } else {
             let error = NSError(domain: "AppleIntelligenceSession", code: 1, userInfo: [NSLocalizedDescriptionKey: "Apple Intelligence is not available."])
             onComplete("", error)
+        }
+    }
+    
+    @objc
+    public func freeTools() {
+        if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *) {
+            freeTools(tools: allocatedTools)
+            allocatedTools.removeAll()
         }
     }
 }
