@@ -6,9 +6,17 @@
     xmlns:local="clr-namespace:Sample"
     Title="Cross Intelligence Sample">
 
-    <ShellContent
-        Title="Chat"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <TabBar>
+        <Tab>
+            <ShellContent
+                Title="Home"
+                ContentTemplate="{DataTemplate local:MainPage}"
+                Route="MainPage" />
+            <ShellContent
+                Title="Chat"
+                ContentTemplate="{DataTemplate local:ChatPage}"
+                Route="ChatPage" />
+        </Tab>
+    </TabBar>
 
 </Shell>

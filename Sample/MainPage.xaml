@@ -1,44 +1,45 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Sample"
              x:Class="Sample.MainPage">
 
     <Grid
-        RowDefinitions="*, Auto"
-        Padding="30,0">
-
+        RowDefinitions="Auto, *">
+        <Label
+            Text="Welcome to CrossIntelligence!"
+            FontSize="32"
+            HorizontalOptions="Center"
+            VerticalOptions="Start"
+            Margin="20"
+            Grid.Row="0"/>
         <CollectionView
-            x:Name="TranscriptList"
-            SelectionMode="None"
-            Grid.Row="0">
+            x:Name="ExampleList"
+            Grid.Row="1">
             <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Label Text="{Binding Text}"/>
+                <DataTemplate x:DataType="local:Example">
+                        <Grid
+                            ColumnDefinitions="Auto, *"
+                            RowDefinitions="Auto, Auto, Auto, 44"
+                            RowSpacing="10"
+                            ColumnSpacing="20"
+                            Padding="10">
+                            <Label Grid.Column="0" Grid.Row="0" Text="Instructions"/>
+                            <Label Grid.Column="1" Grid.Row="0" Text="{Binding Instructions}"/>
+                            <Label Grid.Column="0" Grid.Row="1" Text="Prompt"/>
+                            <Label Grid.Column="1" Grid.Row="1" Text="{Binding Prompt}"/>
+                            <Label Grid.Column="0" Grid.Row="2" Text="Output"/>
+                            <VerticalStackLayout
+                                Grid.Column="1" Grid.Row="2" Spacing="10">
+                                <Label Text="{Binding Output}"/>
+                                <Button
+                                    Text="Run"
+                                    Command="{Binding RunCommand}"
+                                    HorizontalOptions="Start"/>
+                            </VerticalStackLayout>
+                        </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-
-        <Grid
-            Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <Editor
-                x:Name="PromptEditor"
-                Text="Call the guidGenerator tool with the input Hello World! and report its output"
-                Placeholder="Type your message here..."
-                Grid.Column="0"/>
-            <Switch
-                IsToggled="{Binding UseAppleIntelligence}"
-                Grid.Column="1" />
-            <Button
-                x:Name="IntelligenceBtn"
-                Text="Run"
-                Clicked="OnIntelligenceClicked"
-                Grid.Column="2"/>
-        </Grid>
     </Grid>
-
 </ContentPage>
