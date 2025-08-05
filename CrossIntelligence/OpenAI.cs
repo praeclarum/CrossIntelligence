@@ -28,6 +28,7 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
     private readonly ToolDefinition[] toolDefinitions;
     private readonly HttpClient httpClient;
     private readonly List<Message> transcript = new();
+    private bool disposed = false;
 
     public OpenAIIntelligenceSessionImplementation(string model, string apiKey, IIntelligenceTool[]? tools, string instructions, HttpClient? httpClient = null)
     {
@@ -173,6 +174,30 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
             throw new InvalidOperationException("Invalid response from OpenAI API.");
         }
         return responseData;
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposed)
+        {
+            if (disposing)
+            {
+                // Dispose managed resources
+                httpClient?.Dispose();
+            }
+            disposed = true;
+        }
+    }
+
+    ~OpenAIIntelligenceSessionImplementation()
+    {
+        Dispose(false);
     }
 
     class ResponsesRequest
