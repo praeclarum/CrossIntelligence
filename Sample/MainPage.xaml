@@ -23,15 +23,19 @@
                             RowDefinitions="Auto, Auto, Auto, 44"
                             RowSpacing="10"
                             ColumnSpacing="20"
-                            Padding="10">
-                            <Label Grid.Column="0" Grid.Row="0" Text="Instructions"/>
-                            <Label Grid.Column="1" Grid.Row="0" Text="{Binding Instructions}"/>
-                            <Label Grid.Column="0" Grid.Row="1" Text="Prompt"/>
-                            <Label Grid.Column="1" Grid.Row="1" Text="{Binding Prompt}"/>
-                            <Label Grid.Column="0" Grid.Row="2" Text="Output"/>
+                            Padding="10"
+                            BackgroundColor="{Binding BackgroundColor}"
+                            >
+                            <Label Grid.Column="0" Grid.Row="0" Text="Instructions" VerticalOptions="Center"/>
+                            <Label Grid.Column="1" Grid.Row="0" Text="{Binding Instructions}" VerticalOptions="Center" FontSize="18"/>
+                            <Label Grid.Column="0" Grid.Row="1" Text="Prompt" VerticalOptions="Center"/>
+                            <Editor Grid.Column="1" Grid.Row="1" Text="{Binding Prompt}"  VerticalOptions="Center" FontSize="18" BackgroundColor="#333"/>
+                            <Label Grid.Column="0" Grid.Row="2" Text="Output" VerticalOptions="Center"/>
                             <VerticalStackLayout
-                                Grid.Column="1" Grid.Row="2" Spacing="10">
-                                <Label Text="{Binding Output}"/>
+                                Grid.Column="1" Grid.Row="2" Spacing="10"
+                                VerticalOptions="Center"
+                                BackgroundColor="#111">
+                                <Label Text="{Binding Output}" FontSize="22" FontAttributes="Bold"/>
                                 <Button
                                     Text="Run"
                                     Command="{Binding RunCommand}"

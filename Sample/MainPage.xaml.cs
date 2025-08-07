@@ -13,8 +13,9 @@ public partial class MainPage : ContentPage
 	public MainPage()
 	{
 		InitializeComponent();
-		examples.Add(new ToolCallExample());
-		examples.Add(new StructuredOutputExample());
+		examples.Add(new CharacterGeneratorExample());
+		examples.Add(new GuidGeneratorExample());
+		examples.Add(new ColorSettingExample());
 		ExampleList.ItemsSource = examples;
 	}
 
