@@ -10,6 +10,10 @@ class TranscriptEntry
 {
 	public required string Text { get; set; }
 	public required bool IsUser { get; set; }
+
+	public LayoutOptions HorizontalOptions => IsUser ? LayoutOptions.End : LayoutOptions.Start;
+	public Color BackgroundColor => IsUser ? Colors.CornflowerBlue : Color.FromRgb(0x11, 0x11, 0x11);
+	public Color TextColor => IsUser ? Colors.White : Colors.White;
 }
 
 public partial class ChatPage : ContentPage
@@ -37,6 +41,7 @@ public partial class ChatPage : ContentPage
 
 	public ChatPage()
 	{
+		var s = new Label();
 		InitializeComponent();
 		session = new(
 			model: useAppleIntelligence ? IntelligenceModel.AppleIntelligence : IntelligenceModel.OpenAI("gpt-4.1", apiKey: openAIApiKey));

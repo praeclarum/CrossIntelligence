@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:Sample"
              x:Class="Sample.ChatPage">
 
     <Grid
@@ -12,14 +13,23 @@
             SelectionMode="None"
             Grid.Row="0">
             <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Label Text="{Binding Text}"/>
+                <DataTemplate x:DataType="local:TranscriptEntry">
+                    <VerticalStackLayout>
+                        <Label
+                            Text="{Binding Text}"
+                            HorizontalOptions="{Binding HorizontalOptions}"
+                            BackgroundColor="{Binding BackgroundColor}"
+                            TextColor="{Binding TextColor}"
+                            FontSize="20"
+                            Padding="10"/>
+                    </VerticalStackLayout>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
 
         <Grid
-            Grid.Row="1">
+            Grid.Row="1"
+            >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
@@ -28,7 +38,10 @@
                 x:Name="PromptEditor"
                 Text=""
                 Placeholder="Type your message here..."
-                Grid.Column="0"/>
+                Grid.Column="0"
+                FontSize="20"
+                BackgroundColor="#333"
+                MinimumHeightRequest="88"/>
             <Button
                 x:Name="IntelligenceBtn"
                 Text="Submit"
@@ -38,7 +51,8 @@
 
         <HorizontalStackLayout
             Grid.Row="2"
-            Spacing="10">
+            Spacing="10"
+            Padding="5,15">
             <Label Text="Use Apple Intelligence:" />
             <Switch IsToggled="{Binding UseAppleIntelligence}" />
         </HorizontalStackLayout>
