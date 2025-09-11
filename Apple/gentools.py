@@ -21,8 +21,8 @@ fileprivate struct DotnetToolWrapper$index$: Tool, DotnetToolWrapper {
             self.content = content
         }
     }
-    func call(arguments: Arguments) async throws -> ToolOutput {
-        let argsJson = arguments.content.json
+    func call(arguments: Arguments) async throws -> String {
+        let argsJson = arguments.content.jsonString
         guard let tool = tool else {
             throw NSError(domain: "DotnetToolWrapper", code: 0, userInfo: [NSLocalizedDescriptionKey: "Tool is not initialized"])
         }
@@ -31,7 +31,7 @@ fileprivate struct DotnetToolWrapper$index$: Tool, DotnetToolWrapper {
                 continuation.resume(returning: innerResult as String)
             }
         }
-        return ToolOutput(result)
+        return result
     }
 }
 """

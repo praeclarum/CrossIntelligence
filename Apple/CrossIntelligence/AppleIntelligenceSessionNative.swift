@@ -100,7 +100,7 @@ public class AppleIntelligenceSessionNative : NSObject
                 if let schema = parseJsonSchema(jsonSchema) {
                     do {
                         let responseObject = try await implementation.respond(to: prompt, schema: schema, includeSchemaInPrompt: includeSchemaInPrompt)
-                        onComplete(responseObject.json, nil)
+                        onComplete(responseObject.jsonString, nil)
                     }
                     catch {
                         let error = NSError(domain: "AppleIntelligenceSession", code: 0, userInfo: [NSLocalizedDescriptionKey: "Failed to respond to prompt: \(error.localizedDescription)"])
