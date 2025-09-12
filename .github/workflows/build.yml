@@ -24,10 +24,9 @@ jobs:
     - name: Set Xcode
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: "26.0-beta"
+        xcode-version: "26.0"
 
     - name: Download iOS SDK
-      if: false
       run: xcodebuild -downloadPlatform iOS
 
     - name: Setup .NET
@@ -39,4 +38,4 @@ jobs:
       run: dotnet workload restore CrossIntelligence.sln
 
     - name: Build
-      run: dotnet build -f net9.0 -c Release CrossIntelligence/CrossIntelligence.csproj
+      run: dotnet build -f net9.0-ios26.0 -c Release CrossIntelligence/CrossIntelligence.csproj

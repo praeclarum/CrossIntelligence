@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net9.0;net9.0-android;net9.0-ios;net9.0-macos;net9.0-maccatalyst</TargetFrameworks>
+    <TargetFrameworks>net9.0;net9.0-ios26.0;net9.0-macos26.0;net9.0-maccatalyst26.0</TargetFrameworks>
 
     <PackageId>CrossIntelligence</PackageId>
     <Version>0.4.0</Version>
@@ -14,7 +14,7 @@
     <IsBindingProject>true</IsBindingProject>
     <IsTrimmable>true</IsTrimmable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>NU5123</NoWarn>
+    <NoWarn>$(NoWarn);NU5123;XCODE_26_0_PREVIEW</NoWarn>
 
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'ios'">13.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'macos'">10.15</SupportedOSPlatformVersion>
