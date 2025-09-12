@@ -26,6 +26,9 @@ jobs:
       with:
         xcode-version: "26.0"
 
+    - name: Download iOS SDK
+      run: xcodebuild -downloadPlatform iOS
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
