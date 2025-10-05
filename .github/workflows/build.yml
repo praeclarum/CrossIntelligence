@@ -8,6 +8,15 @@ on:
     branches:
     - main
   workflow_dispatch:
+    inputs:
+      package:
+        description: "Build package?"
+        required: true
+        type: choice
+        options:
+          - "Yes"
+          - "No"
+        default: "No"
 
 jobs:
   build:
@@ -39,12 +48,17 @@ jobs:
       run: sed -i '' -E 's#(<Version>)([0-9]+\.[0-9]+)\.[0-9]+(</Version>)#\1\2.'"${GITHUB_RUN_NUMBER}"'\3#' CrossIntelligence/CrossIntelligence.csproj
 
     - name: Build
-      run: dotnet build -f net9.0-ios26.0 -c Release CrossIntelligence/CrossIntelligence.csproj
+      run: dotnet build -c Release CrossIntelligence/CrossIntelligence.csproj
+
+    - name: Test
+      run: dotnet test -c Release Tests/Tests.csproj
 
     - name: Package
+      if: github.event.inputs.package == 'Yes'
       run: dotnet pack -c Release -o PackageOut CrossIntelligence/CrossIntelligence.csproj
 
     - name: Upload Artifacts
+      if: github.event.inputs.package == 'Yes'
       uses: actions/upload-artifact@v4
       with:
         name: CrossIntelligenceNuGetPackage
