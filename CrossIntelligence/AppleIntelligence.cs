@@ -2,6 +2,7 @@ namespace CrossIntelligence;
 
 public class AppleIntelligenceModel : IIntelligenceModel
 {
+    public string Id => "appleIntelligence";
     public IIntelligenceSessionImplementation CreateSessionImplementation(IIntelligenceTool[]? tools, string instructions)
     {
 #if __IOS__ || __MACOS__ || __MACCATALYST__

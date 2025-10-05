@@ -19,4 +19,32 @@ public class ModelTests
         Assert.NotNull(model);
     }
 #endif
+
+    [Fact]
+    public void AppleIntelligenceId()
+    {
+        Assert.Equal("appleIntelligence", new AppleIntelligenceModel().Id);
+    }
+
+    [Fact]
+    public void AppleIntelligenceFromId()
+    {
+        var model = IntelligenceModels.FromId("appleIntelligence");
+        Assert.IsType<AppleIntelligenceModel>(model);
+    }
+
+    [Fact]
+    public void OpenAIId()
+    {
+        Assert.Equal("openai:gpt-4.1", new OpenAIModel("gpt-4.1").Id);
+    }
+
+    [Fact]
+    public void OpenAIFromId()
+    {
+        var model = IntelligenceModels.FromId("openai:gpt-4o");
+        Assert.IsType<OpenAIModel>(model);
+        var omodel = model as OpenAIModel;
+        Assert.Equal("gpt-4o", omodel?.Model);
+    }
 }

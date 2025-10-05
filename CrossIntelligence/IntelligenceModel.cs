@@ -2,11 +2,13 @@ using CrossIntelligence;
 
 public interface IIntelligenceModel
 {
+    string Id { get; }
     IIntelligenceSessionImplementation CreateSessionImplementation(IIntelligenceTool[]? tools, string instructions);
 }
 
 public abstract class IntelligenceModel : IIntelligenceModel
 {
+    public abstract string Id { get; }
     public abstract IIntelligenceSessionImplementation CreateSessionImplementation(IIntelligenceTool[]? tools, string instructions);
 }
 
@@ -21,7 +23,20 @@ public static class IntelligenceModels
 
     public static OpenAIModel OpenAI(string model, string? apiKey = null)
     {
-        apiKey ??= Environment.GetEnvironmentVariable("OPENAI_API_KEY");
-        return new OpenAIModel(model, apiKey ?? "");
+        return new OpenAIModel(model, apiKey: apiKey);
+    }
+
+    public static IIntelligenceModel? FromId(string id)
+    {
+        if (string.Equals(id, "appleIntelligence", StringComparison.OrdinalIgnoreCase))
+        {
+            return new AppleIntelligenceModel();
+        }
+        if (id.StartsWith("openai:", StringComparison.OrdinalIgnoreCase))
+        {
+            var model = id.Substring("openai:".Length);
+            return new OpenAIModel(model);
+        }
+        return null;
     }
 }
