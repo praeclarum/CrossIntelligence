@@ -5,7 +5,8 @@ namespace Tests;
 public class StringResponseTests
 {
     const string OpenAIModelId = "openai:gpt-5-mini";
-    const string OpenRouterModelId = "openrouter:google/gemma-3-27b-it:free";
+    // const string OpenRouterModelId = "openrouter:google/gemma-3-27b-it:free";
+    const string OpenRouterModelId = "openrouter:mistralai/mistral-small-3.1-24b-instruct:free";
 
     private readonly ITestOutputHelper output;
 
@@ -56,7 +57,7 @@ public class StringResponseTests
 
         var session = new IntelligenceSession(modelId, tools: [new AddPlayerTool(gameDatabase)]);
         Assert.Equal(0, gameDatabase.NpcCount);
-        var response = await session.RespondAsync("Add 3 new NPCs to the game.");
+        var response = await session.RespondAsync("Add 3 new NPCs to the game. Just make up their information, don't ask me anything.");
         Assert.NotNull(response);
         Assert.Equal(3, gameDatabase.NpcCount);
         foreach (var npc in gameDatabase.Npcs)

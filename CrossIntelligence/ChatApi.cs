@@ -142,10 +142,10 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         JsonSerializerSettings settings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
-            Formatting = Formatting.None
+            Formatting = Formatting.Indented
         };
         var requestBody = JsonConvert.SerializeObject(request, settings);
-        // System.Diagnostics.Debug.WriteLine(requestBody);
+        System.Diagnostics.Debug.WriteLine(requestBody);
         var requestContent = new StringContent(requestBody, System.Text.Encoding.UTF8, "application/json");
 
         var response = await httpClient.PostAsync($"{baseUrl}/chat/completions", requestContent).ConfigureAwait(false);
@@ -154,7 +154,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         {
             throw new HttpRequestException($"Chat API request failed with status code {response.StatusCode} ({(int)response.StatusCode}): {responseBody}");
         }
-        // System.Diagnostics.Debug.WriteLine(responseBody);
+        System.Diagnostics.Debug.WriteLine(responseBody);
 
         var responseData = JsonConvert.DeserializeObject<ChatCompletionsResponse>(responseBody);
         if (responseData == null || responseData.Choices.Length == 0)
@@ -243,24 +243,33 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
 
     class ToolDefinition
     {
+        [JsonProperty("type")]
+        public string Type { get; set; } = "function";
+        [JsonProperty("function")]
+        public ToolFunction? Function { get; set; } = null;
+        public static ToolDefinition FromTool(IIntelligenceTool tool)
+        {
+            return new ToolDefinition
+            {
+                Function = ToolFunction.FromTool(tool)
+            };
+        }
+    }
+
+    class ToolFunction
+    {
         [JsonProperty("name")]
         public string Name { get; set; } = string.Empty;
 
         [JsonProperty("description")]
         public string Description { get; set; } = string.Empty;
 
-        [JsonProperty("strict")]
-        public bool Strict { get; set; } = true;
-
-        [JsonProperty("type")]
-        public string Type { get; set; } = "function";
-
         [JsonProperty("parameters")]
         public JSchema? Parameters { get; set; }
 
-        public static ToolDefinition FromTool(IIntelligenceTool tool)
+        public static ToolFunction FromTool(IIntelligenceTool tool)
         {
-            var definition = new ToolDefinition
+            var definition = new ToolFunction
             {
                 Name = tool.Name,
                 Description = tool.Description,
