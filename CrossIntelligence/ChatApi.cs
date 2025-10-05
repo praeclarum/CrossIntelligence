@@ -25,10 +25,10 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         this.httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
         if (!string.IsNullOrEmpty(instructions))
         {
-            transcript.Add(new InputContentMessage
+            transcript.Add(new Message
             {
                 Role = "developer",
-                Content = [new Content { Type = "input_text", Text = instructions }]
+                Content = instructions
             });
         }
     }
@@ -50,42 +50,38 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
 
     async Task<string> InternalRespondAsync(string prompt, Type? responseType)
     {
-        var userMessage = new InputContentMessage
+        var userMessage = new Message
         {
             Role = "user",
-            Content = [new Content { Type = "input_text", Text = prompt }]
+            Content = prompt
         };
         transcript.Add(userMessage);
-        TextOptions? textOptions = null;
+        ResponseFormat? responseFormat = null;
         if (responseType is not null)
         {
             var schema = responseType.GetJsonSchemaObject();
-            textOptions = new TextOptions
+            responseFormat = new ResponseFormat
             {
-                Format = new TextFormat
-                {
-                    Type = "json_schema",
-                    Name = responseType.Name,
-                    Schema = schema
-                }
+                Type = "json_schema",
+                Schema = schema
             };
         }
         var initialRequest = new ChatCompletionsRequest
         {
             Model = model,
-            Input = transcript.ToArray(),
+            Messages = transcript.ToArray(),
             Tools = toolDefinitions,
-            TextOptions = textOptions
+            ResponseFormat = responseFormat
         };
         var response = await GetResponseAsync(initialRequest).ConfigureAwait(false);
         var toolResults = new List<FunctionCallOutputMessage>();
         do
         {
             toolResults.Clear();
-            foreach (var output in response.Output)
-            {
+            foreach (var output in response.Choices)
+            {/*
                 transcript.Add(output);
-                if (output.Type == "function_call")
+                if (false)
                 {
                     var toolName = output.Name;
                     var result = "";
@@ -111,7 +107,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
                         Output = result
                     };
                     toolResults.Add(m);
-                }
+                }*/
             }
             foreach (var toolResult in toolResults)
             {
@@ -122,14 +118,17 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
                 var toolOutputRequest = new ChatCompletionsRequest
                 {
                     Model = model,
-                    Input = transcript.ToArray(),
+                    Messages = transcript.ToArray(),
                     Tools = toolDefinitions,
-                    TextOptions = textOptions
+                    ResponseFormat = responseFormat
                 };
                 response = await GetResponseAsync(toolOutputRequest).ConfigureAwait(false);
             }
         } while (toolResults.Count > 0);
-        var allOutput = string.Join("\n\n", response.Output.Where(t => t.Content != null).SelectMany(m => m.Content ?? Array.Empty<Content>()).Select(c => c.Text));
+        var allOutput = response.Choices
+            .Where(t => !string.IsNullOrEmpty(t.Message?.Content))
+            .Select(m => m.Message?.Content)
+            .FirstOrDefault() ?? "";
         return allOutput;
     }
 
@@ -150,8 +149,10 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
             throw new HttpRequestException($"Chat API request failed with status code {response.StatusCode} ({(int)response.StatusCode}): {responseBody}");
         }
 
+        System.Diagnostics.Debug.WriteLine(responseBody);
+
         var responseData = JsonConvert.DeserializeObject<ChatCompletionsResponse>(responseBody);
-        if (responseData == null || responseData.Output.Length == 0)
+        if (responseData == null || responseData.Choices.Length == 0)
         {
             throw new InvalidOperationException("Invalid response from Chat API.");
         }
@@ -181,56 +182,48 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
     {
         [JsonProperty("model")]
         public string Model { get; set; } = string.Empty;
-        [JsonProperty("input")]
-        public Message[] Input { get; set; } = Array.Empty<Message>();
+        [JsonProperty("messages")]
+        public Message[] Messages { get; set; } = Array.Empty<Message>();
         [JsonProperty("tools")]
         public ToolDefinition[] Tools { get; set; } = Array.Empty<ToolDefinition>();
-        [JsonProperty("text")]
-        public TextOptions? TextOptions { get; set; } = null;
+        [JsonProperty("response_format")]
+        public ResponseFormat? ResponseFormat { get; set; } = null;
     }
 
     class ChatCompletionsResponse
     {
-        [JsonProperty("output")]
-        public OutputMessage[] Output { get; set; } = Array.Empty<OutputMessage>();
+        [JsonProperty("choices")]
+        public Choice[] Choices { get; set; } = Array.Empty<Choice>();
+    }
+
+    class Choice
+    {
+        [JsonProperty("message")]
+        public OutputMessage? Message { get; set; } = null;
+        [JsonProperty("finish_reason")]
+        public string? FinishReason { get; set; } = null;
+        [JsonProperty("index")]
+        public int Index { get; set; } = 0;
     }
 
     class Message
     {
-        [JsonProperty("type")]
-        public string Type { get; set; } = "message";
-    }
-
-    class InputMessage : Message
-    {
-    }
-
-    class InputContentMessage : InputMessage
-    {
         [JsonProperty("role")]
         public string? Role { get; set; } = null;
         [JsonProperty("content")]
-        public Content[]? Content { get; set; } = null;
+        public string? Content { get; set; } = null;
     }
 
-    class FunctionCallOutputMessage : InputMessage
+    class FunctionCallOutputMessage : Message
     {
         [JsonProperty("call_id")]
         public string? CallId { get; set; } = null;
         [JsonProperty("output")]
         public string? Output { get; set; } = null;
-        public FunctionCallOutputMessage()
-        {
-            Type = "function_call_output";
-        }
     }
 
     class OutputMessage : Message
     {
-        [JsonProperty("role")]
-        public string? Role { get; set; } = null;
-        [JsonProperty("content")]
-        public Content[]? Content { get; set; } = null;
         [JsonProperty("status")]
         public string? Status { get; set; } = null;
         [JsonProperty("call_id")]
@@ -241,15 +234,6 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         public string? Arguments { get; set; } = null;
         [JsonProperty("summary")]
         public string[]? Summary { get; set; } = null;
-    }
-
-    class Content
-    {
-        [JsonProperty("type")]
-        public string Type { get; set; } = string.Empty;
-
-        [JsonProperty("text")]
-        public string? Text { get; set; } = null;
     }
 
     class ToolDefinition
@@ -283,19 +267,11 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         }
     }
 
-    class TextOptions
-    {
-        [JsonProperty("format")]
-        public TextFormat? Format { get; set; } = null;
-    }
-
-    class TextFormat
+    class ResponseFormat
     {
         [JsonProperty("type")]
         public string Type { get; set; } = "json_schema";
-        [JsonProperty("name")]
-        public string? Name { get; set; } = null;
-        [JsonProperty("schema")]
+        [JsonProperty("json_schema")]
         public JSchema? Schema { get; set; } = null;
     }
 }
