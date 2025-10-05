@@ -57,13 +57,8 @@ Console.WriteLine($"Name: {response.Name}, Age: {response.Age}, Occupation: {res
 You can define tools (functions) that the LLM can call to perform specific tasks. Define a class the inherits from `IntelligenceTool` and implement the `ExecuteAsync` method. Tools take arguments that are specified using a generic type parameter.
 
 ```csharp
-class AddPlayerTool : IntelligenceTool<NonPlayerCharacter>
+class AddPlayerTool(GameDatabase gameDatabase) : IntelligenceTool<NonPlayerCharacter>
 {
-    private GameDatabase gameDatabase;
-    public AddPlayerTool(GameDatabase gameDatabase)
-    {
-        this.gameDatabase = gameDatabase;
-    }
     public override string Name => "AddPlayer";
     public override string Description => "Adds a new non-player character (NPC) to the game.";
     public override async Task<string> ExecuteAsync(NonPlayerCharacter npc)
