@@ -34,14 +34,18 @@ jobs:
     - name: Install Workloads
       run: dotnet workload restore CrossIntelligence.sln
 
+    - name: Set package Version from run number
+      shell: bash
+      run: sed -i '' -E 's#(<Version>)([0-9]+\.[0-9]+)\.[0-9]+(</Version>)#\1\2.'"${GITHUB_RUN_NUMBER}"'\3#' CrossIntelligence/CrossIntelligence.csproj
+
     - name: Build
       run: dotnet build -f net9.0-ios26.0 -c Release CrossIntelligence/CrossIntelligence.csproj
 
     - name: Package
-      run: dotnet pack -o PackageOut CrossIntelligence/CrossIntelligence.csproj
+      run: dotnet pack -c Release -o PackageOut CrossIntelligence/CrossIntelligence.csproj
 
     - name: Upload Artifacts
       uses: actions/upload-artifact@v3
       with:
-        name: nupkg
-        path: ./nupkg
+        name: CrossIntelligenceNuGetPackage
+        path: ./PackageOut
