@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     name: Build iOS and Mac
-    runs-on: macos-15
+    runs-on: macos-26
 
     steps:
 
@@ -26,9 +26,6 @@ jobs:
       with:
         xcode-version: "26.0"
 
-    - name: Download iOS SDK
-      run: xcodebuild -downloadPlatform iOS
-
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -39,3 +36,12 @@ jobs:
 
     - name: Build
       run: dotnet build -f net9.0-ios26.0 -c Release CrossIntelligence/CrossIntelligence.csproj
+
+    - name: Package
+      run: dotnet pack -o PackageOut CrossIntelligence/CrossIntelligence.csproj
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: nupkg
+        path: ./nupkg
