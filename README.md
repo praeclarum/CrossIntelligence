@@ -89,6 +89,14 @@ var response = await session.RespondAsync("What is the meaning of life?");
 Console.WriteLine(response);
 ```
 
+## Testing
+
+Tests require an OpenAI API key to run. Pass the OpenAI API key as an environment variable before running the tests.
+
+```bash
+dotnet test -c Release -e OPENAI_API_KEY=$OPENAI_API_KEY Tests/Tests.csproj
+```
+
 ## Contributing
 
 If you'd like to contribute to the CrossIntelligence library, please fork the repository and submit a pull request.

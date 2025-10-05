@@ -51,7 +51,7 @@ jobs:
       run: dotnet build -c Release CrossIntelligence/CrossIntelligence.csproj
 
     - name: Test
-      run: dotnet test -c Release Tests/Tests.csproj
+      run: dotnet test -c Release -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} Tests/Tests.csproj
 
     - name: Package
       if: github.event.inputs.package == 'Yes'
