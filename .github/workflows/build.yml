@@ -53,6 +53,9 @@ jobs:
     - name: Test
       run: dotnet test -c Release -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} Tests/Tests.csproj
 
+    - name: Build Sample
+      run: dotnet build -c Release -f net9.0-maccatalyst26.0 -r maccatalyst-arm64 Sample/CrossIntelligenceSample.csproj
+
     - name: Package
       if: github.event.inputs.package == 'Yes'
       run: dotnet pack -c Release -o PackageOut CrossIntelligence/CrossIntelligence.csproj
