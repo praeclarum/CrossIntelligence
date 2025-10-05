@@ -17,4 +17,11 @@ public class SessionTests
         Assert.False(IntelligenceSession.IsAppleIntelligenceAvailable);
     }
 #endif
+
+    [Fact]
+    public void SessionHasDefaultCtor()
+    {
+        var session = new IntelligenceSession();
+        Assert.NotNull(session);
+    }
 }

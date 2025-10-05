@@ -25,12 +25,10 @@ public class IntelligenceSession : IDisposable
     {
     }
 
-#if __IOS__ || __MACOS__ || __MACCATALYST__
     public IntelligenceSession(IIntelligenceTool[]? tools = null, string instructions = "")
-        : this(IntelligenceModel.AppleIntelligence, tools, instructions)
+        : this(IntelligenceModels.Default, tools, instructions)
     {
     }
-#endif
 
 #if __IOS__ || __MACOS__ || __MACCATALYST__
     public static bool IsAppleIntelligenceAvailable => AppleIntelligenceSessionNative.IsAppleIntelligenceAvailable;

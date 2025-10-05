@@ -84,7 +84,7 @@ Console.WriteLine(response);
 You can use other models than the default system model by passing in the `model` parameter when creating the `IntelligenceSession`.
 
 ```csharp
-var session = new IntelligenceSession(model: IntelligenceModel.OpenAI("gpt-4.1", apiKey: "OPENAI_API_KEY"));
+var session = new IntelligenceSession(model: IntelligenceModels.OpenAI("gpt-5-mini", apiKey: "OPENAI_API_KEY"));
 var response = await session.RespondAsync("What is the meaning of life?");
 Console.WriteLine(response);
 ```
