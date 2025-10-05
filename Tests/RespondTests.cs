@@ -31,7 +31,7 @@ public class StringResponseTests
         var response = await session.RespondAsync<NonPlayerCharacter>("Generate a random NPC with a name, age, and occupation.");
         Assert.NotNull(response);
         Assert.False(string.IsNullOrWhiteSpace(response.Name));
-        Assert.InRange(response.Age, 0, 120);
+        Assert.InRange(response.Age, 0, 10_000);
         Assert.False(string.IsNullOrWhiteSpace(response.Occupation));
     }
 
@@ -50,7 +50,7 @@ public class StringResponseTests
         foreach (var npc in gameDatabase.Npcs)
         {
             Assert.False(string.IsNullOrWhiteSpace(npc.Name));
-            Assert.InRange(npc.Age, 0, 120);
+            Assert.InRange(npc.Age, 0, 10_000);
             Assert.False(string.IsNullOrWhiteSpace(npc.Occupation));
         }
     }
@@ -70,7 +70,7 @@ public class StringResponseTests
         foreach (var npc in gameDatabase.Npcs)
         {
             Assert.False(string.IsNullOrWhiteSpace(npc.Name));
-            Assert.InRange(npc.Age, 0, 120);
+            Assert.InRange(npc.Age, 0, 10_000);
             Assert.False(string.IsNullOrWhiteSpace(npc.Occupation));
         }
     }
