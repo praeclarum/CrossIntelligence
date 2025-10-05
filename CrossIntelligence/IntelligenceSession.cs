@@ -32,8 +32,10 @@ public class IntelligenceSession : IDisposable
 
 #if __IOS__ || __MACOS__ || __MACCATALYST__
     public static bool IsAppleIntelligenceAvailable => AppleIntelligenceSessionNative.IsAppleIntelligenceAvailable;
+    public static AppleIntelligenceAvailability AppleIntelligenceAvailability => AppleIntelligenceSessionNative.AppleIntelligenceAvailability;
 #else
     public static bool IsAppleIntelligenceAvailable => false;
+    public static AppleIntelligenceAvailability AppleIntelligenceAvailability => AppleIntelligenceAvailability.PlatformNotSupported;
 #endif
 
     public Task<string> RespondAsync(string prompt)

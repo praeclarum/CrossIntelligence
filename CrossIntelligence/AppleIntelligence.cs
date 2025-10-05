@@ -1,15 +1,18 @@
 namespace CrossIntelligence;
 
-#if __IOS__ || __MACOS__ || __MACCATALYST__
 public class AppleIntelligenceModel : IIntelligenceModel
 {
     public IIntelligenceSessionImplementation CreateSessionImplementation(IIntelligenceTool[]? tools, string instructions)
     {
-        // Create and return an instance of a class that implements IIntelligenceSessionImplementation
+#if __IOS__ || __MACOS__ || __MACCATALYST__
         return new AppleIntelligenceSessionImplementation(instructions, tools);
+#else
+        throw new NotSupportedException("Apple Intelligence is only supported on iOS, macOS, and Mac Catalyst platforms.");
+#endif
     }
 }
 
+#if __IOS__ || __MACOS__ || __MACCATALYST__
 class DotnetToolProxy : DotnetTool
 {
     public IIntelligenceTool Tool { get; set; }

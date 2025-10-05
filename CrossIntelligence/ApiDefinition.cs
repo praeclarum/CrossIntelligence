@@ -18,6 +18,10 @@ namespace CrossIntelligence
 		[Export("isAppleIntelligenceAvailable")]
 		bool IsAppleIntelligenceAvailable { get; }
 
+		[Static]
+		[Export("appleIntelligenceAvailability")]
+		AppleIntelligenceAvailability AppleIntelligenceAvailability { get; }
+
 		[Export("respond:onComplete:")]
 		[Async]
 		void Respond(string input, IntelligenceResponseHandler onComplete);

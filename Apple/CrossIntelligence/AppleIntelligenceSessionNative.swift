@@ -67,10 +67,26 @@ public class AppleIntelligenceSessionNative : NSObject
     
     @objc
     public static var isAppleIntelligenceAvailable: Bool {
+        appleIntelligenceAvailability == AppleIntelligenceAvailability.available.rawValue
+    }
+
+    @objc
+    public static var appleIntelligenceAvailability: Int32 {
         if #available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *) {
-            return SystemLanguageModel.default.isAvailable
+            switch SystemLanguageModel.default.availability {
+            case .available:
+                return AppleIntelligenceAvailability.available.rawValue
+            case .unavailable(.appleIntelligenceNotEnabled):
+                return AppleIntelligenceAvailability.notEnabled.rawValue
+            case .unavailable(.deviceNotEligible):
+                return AppleIntelligenceAvailability.deviceNotEligible.rawValue
+            case .unavailable(.modelNotReady):
+                return AppleIntelligenceAvailability.modelNotReady.rawValue
+            default:
+                return AppleIntelligenceAvailability.notAvailableForOtherReasons.rawValue
+            }
         } else {
-            return false
+            return AppleIntelligenceAvailability.platformVersionNotSupported.rawValue
         }
     }
 
@@ -122,4 +138,14 @@ public class AppleIntelligenceSessionNative : NSObject
     public func freeTools() {
         implementation?.freeTools()
     }
+}
+
+enum AppleIntelligenceAvailability: Int32 {
+    case available = 0
+    case platformNotSupported = 1
+    case platformVersionNotSupported = 2
+    case notEnabled = 3
+    case deviceNotEligible = 4
+    case modelNotReady = 5
+    case notAvailableForOtherReasons = 6
 }

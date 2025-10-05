@@ -9,12 +9,14 @@ public class SessionTests
     public void AppleIntelligenceAvailable()
     {
         Assert.True(IntelligenceSession.IsAppleIntelligenceAvailable);
+        Assert.Equal(AppleIntelligenceAvailability.Available, IntelligenceSession.AppleIntelligenceAvailability);
     }
 #else
     [Fact]
     public void AppleIntelligenceNotAvailable()
     {
         Assert.False(IntelligenceSession.IsAppleIntelligenceAvailable);
+        Assert.Equal(AppleIntelligenceAvailability.PlatformNotSupported, IntelligenceSession.AppleIntelligenceAvailability);
     }
 #endif
 
