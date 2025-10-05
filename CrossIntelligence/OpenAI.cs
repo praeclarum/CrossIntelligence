@@ -95,15 +95,7 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
             foreach (var output in response.Output)
             {
                 transcript.Add(output);
-                if (output.Type == "message")
-                {
-                    var m = new InputContentMessage
-                    {
-                        Role = output.Role,
-                        Content = output.Content
-                    };
-                }
-                else if (output.Type == "function_call")
+                if (output.Type == "function_call")
                 {
                     var toolName = output.Name;
                     var result = "";
@@ -262,6 +254,8 @@ class OpenAIIntelligenceSessionImplementation : IIntelligenceSessionImplementati
         public string? Name { get; set; } = null;
         [JsonProperty("arguments")]
         public string? Arguments { get; set; } = null;
+        [JsonProperty("summary")]
+        public string[]? Summary { get; set; } = null;
     }
 
     class Content
