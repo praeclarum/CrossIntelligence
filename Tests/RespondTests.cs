@@ -55,6 +55,26 @@ public class StringResponseTests
         }
     }
 
+    [Fact]
+    public async Task AddNpcsWithStructuredOutput()
+    {
+        SkipOpenAIUnlessKeySet();
+
+        var gameDatabase = new GameDatabase();
+
+        var session = new IntelligenceSession(tools: [new AddPlayerWithStructuredOutputTool(gameDatabase)]);
+        Assert.Equal(0, gameDatabase.NpcCount);
+        var response = await session.RespondAsync("Add 3 new NPCs to the game.");
+        Assert.NotNull(response);
+        Assert.Equal(3, gameDatabase.NpcCount);
+        foreach (var npc in gameDatabase.Npcs)
+        {
+            Assert.False(string.IsNullOrWhiteSpace(npc.Name));
+            Assert.InRange(npc.Age, 0, 120);
+            Assert.False(string.IsNullOrWhiteSpace(npc.Occupation));
+        }
+    }
+
     static void SkipOpenAIUnlessKeySet()
     {
         Assert.SkipUnless(Environment.GetEnvironmentVariable("OPENAI_API_KEY") is { Length: > 0 }, "OPENAI_API_KEY environment variable not set");
@@ -75,6 +95,22 @@ public class StringResponseTests
         {
             await gameDatabase.AddPlayerAsync(npc);
             return $"Added NPC: {npc.Name}.";
+        }
+    }
+
+    class AddResults
+    {
+        public int NumNpcsInDatabase { get; set; }
+    }
+
+    class AddPlayerWithStructuredOutputTool(GameDatabase gameDatabase) : IntelligenceTool<NonPlayerCharacter, AddResults>
+    {
+        public override string Name => "AddPlayer";
+        public override string Description => "Adds a new non-player character (NPC) to the game.";
+        public override async Task<AddResults> ExecuteAsync(NonPlayerCharacter npc)
+        {
+            await gameDatabase.AddPlayerAsync(npc);
+            return new AddResults { NumNpcsInDatabase = gameDatabase.NpcCount  };
         }
     }
 
