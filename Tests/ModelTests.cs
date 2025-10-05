@@ -47,4 +47,19 @@ public class ModelTests
         var omodel = model as OpenAIModel;
         Assert.Equal("gpt-4o", omodel?.Model);
     }
+
+    [Fact]
+    public void OpenRouterId()
+    {
+        Assert.Equal("openrouter:google/gemma-3n-e2b-it:free", new OpenRouterModel("google/gemma-3n-e2b-it:free").Id);
+    }
+
+    [Fact]
+    public void OpenRouterFromId()
+    {
+        var model = IntelligenceModels.FromId("openrouter:google/gemma-3n-e2b-it:free");
+        Assert.IsType<OpenRouterModel>(model);
+        var omodel = model as OpenRouterModel;
+        Assert.Equal("google/gemma-3n-e2b-it:free", omodel?.Model);
+    }
 }

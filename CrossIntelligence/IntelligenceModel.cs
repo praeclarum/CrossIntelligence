@@ -37,6 +37,11 @@ public static class IntelligenceModels
             var model = id.Substring("openai:".Length);
             return new OpenAIModel(model);
         }
+        if (id.StartsWith("openrouter:", StringComparison.OrdinalIgnoreCase))
+        {
+            var model = id.Substring("openrouter:".Length);
+            return new OpenRouterModel(model);
+        }
         return null;
     }
 }
