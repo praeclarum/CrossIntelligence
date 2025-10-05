@@ -5,7 +5,7 @@ namespace Tests;
 public class StringResponseTests
 {
     const string OpenAIModelId = "openai:gpt-5-mini";
-    const string OpenRouterModelId = "openrouter:google/gemma-3n-e2b-it:free";
+    const string OpenRouterModelId = "openrouter:google/gemma-3-27b-it:free";
 
     private readonly ITestOutputHelper output;
 

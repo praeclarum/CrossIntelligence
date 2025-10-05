@@ -32,7 +32,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
             });
         }
     }
-    
+
     ~ChatApiSessionImplementation()
     {
         Dispose(false);
@@ -63,7 +63,12 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
             responseFormat = new ResponseFormat
             {
                 Type = "json_schema",
-                Schema = schema
+                JsonSchema = new ResponseJsonSchema
+                {
+                    Name = responseType.Name,
+                    Strict = true,
+                    Schema = schema
+                }
             };
         }
         var initialRequest = new ChatCompletionsRequest
@@ -137,10 +142,11 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         JsonSerializerSettings settings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
-            Formatting = Formatting.Indented
+            Formatting = Formatting.None
         };
-        var json = JsonConvert.SerializeObject(request, settings);
-        var requestContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+        var requestBody = JsonConvert.SerializeObject(request, settings);
+        // System.Diagnostics.Debug.WriteLine(requestBody);
+        var requestContent = new StringContent(requestBody, System.Text.Encoding.UTF8, "application/json");
 
         var response = await httpClient.PostAsync($"{baseUrl}/chat/completions", requestContent).ConfigureAwait(false);
         var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -148,8 +154,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         {
             throw new HttpRequestException($"Chat API request failed with status code {response.StatusCode} ({(int)response.StatusCode}): {responseBody}");
         }
-
-        System.Diagnostics.Debug.WriteLine(responseBody);
+        // System.Diagnostics.Debug.WriteLine(responseBody);
 
         var responseData = JsonConvert.DeserializeObject<ChatCompletionsResponse>(responseBody);
         if (responseData == null || responseData.Choices.Length == 0)
@@ -272,6 +277,16 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         [JsonProperty("type")]
         public string Type { get; set; } = "json_schema";
         [JsonProperty("json_schema")]
+        public ResponseJsonSchema? JsonSchema { get; set; } = null;
+    }
+    
+    class ResponseJsonSchema
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; } = "Object";
+        [JsonProperty("strict")]
+        public bool Strict { get; set; } = true;
+        [JsonProperty("schema")]
         public JSchema? Schema { get; set; } = null;
     }
 }
