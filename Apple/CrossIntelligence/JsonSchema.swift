@@ -57,7 +57,9 @@ fileprivate func parseDynamicJsonSchema(_ json: String) -> DynamicGenerationSche
 
 @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
 func parseJsonSchema(_ json: String) -> GenerationSchema? {
-    let dschema = parseDynamicJsonSchema(json)
+    guard let dschema = parseDynamicJsonSchema(json) else {
+        return nil
+    }
     guard let schema = try? GenerationSchema(root: dschema, dependencies: []) else {
         print("Failed to create GenerationSchema from DynamicGenerationSchema: \(json)")
         return nil
