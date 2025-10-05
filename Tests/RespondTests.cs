@@ -4,6 +4,9 @@ namespace Tests;
 
 public class StringResponseTests
 {
+    const string OpenAIModelId = "openai:gpt-5-mini";
+    const string OpenRouterModelId = "openrouter:google/gemma-3n-e2b-it:free";
+
     private readonly ITestOutputHelper output;
 
     public StringResponseTests(ITestOutputHelper testOutputHelper)
@@ -11,23 +14,29 @@ public class StringResponseTests
         output = testOutputHelper;
     }
 
-    [Fact]
-    public async Task SayThisIsATest()
+    [Theory]
+    [InlineData("appleIntelligence")]
+    [InlineData(OpenAIModelId)]
+    [InlineData(OpenRouterModelId)]
+    public async Task SayThisIsATest(string modelId)
     {
-        SkipOpenAIUnlessKeySet();
+        SkipUnlessKeySet(modelId);
 
-        using var session = new IntelligenceSession();
+        using var session = new IntelligenceSession(modelId);
         var response = await session.RespondAsync("Say \"this is a test\"");
         Assert.NotNull(response);
         Assert.Contains("test", response, StringComparison.OrdinalIgnoreCase);
     }
 
-    [Fact]
-    public async Task GenerateNpc()
+    [Theory]
+    [InlineData("appleIntelligence")]
+    [InlineData(OpenAIModelId)]
+    [InlineData(OpenRouterModelId)]
+    public async Task GenerateNpc(string modelId)
     {
-        SkipOpenAIUnlessKeySet();
+        SkipUnlessKeySet(modelId);
 
-        var session = new IntelligenceSession();
+        var session = new IntelligenceSession(modelId);
         var response = await session.RespondAsync<NonPlayerCharacter>("Generate a random NPC with a name, age, and occupation.");
         Assert.NotNull(response);
         Assert.False(string.IsNullOrWhiteSpace(response.Name));
@@ -35,14 +44,17 @@ public class StringResponseTests
         Assert.False(string.IsNullOrWhiteSpace(response.Occupation));
     }
 
-    [Fact]
-    public async Task AddNpcs()
+    [Theory]
+    [InlineData("appleIntelligence")]
+    [InlineData(OpenAIModelId)]
+    [InlineData(OpenRouterModelId)]
+    public async Task AddNpcs(string modelId)
     {
-        SkipOpenAIUnlessKeySet();
+        SkipUnlessKeySet(modelId);
 
         var gameDatabase = new GameDatabase();
 
-        var session = new IntelligenceSession(tools: [new AddPlayerTool(gameDatabase)]);
+        var session = new IntelligenceSession(modelId, tools: [new AddPlayerTool(gameDatabase)]);
         Assert.Equal(0, gameDatabase.NpcCount);
         var response = await session.RespondAsync("Add 3 new NPCs to the game.");
         Assert.NotNull(response);
@@ -55,14 +67,17 @@ public class StringResponseTests
         }
     }
 
-    [Fact]
-    public async Task AddNpcsWithStructuredOutput()
+    [Theory]
+    [InlineData("appleIntelligence")]
+    [InlineData(OpenAIModelId)]
+    [InlineData(OpenRouterModelId)]
+    public async Task AddNpcsWithStructuredOutput(string modelId)
     {
-        SkipOpenAIUnlessKeySet();
+        SkipUnlessKeySet(modelId);
 
         var gameDatabase = new GameDatabase();
 
-        var session = new IntelligenceSession(tools: [new AddPlayerWithStructuredOutputTool(gameDatabase)]);
+        var session = new IntelligenceSession(modelId, tools: [new AddPlayerWithStructuredOutputTool(gameDatabase)]);
         Assert.Equal(0, gameDatabase.NpcCount);
         var response = await session.RespondAsync("Add 3 new NPCs to the game.");
         Assert.NotNull(response);
@@ -75,9 +90,22 @@ public class StringResponseTests
         }
     }
 
-    static void SkipOpenAIUnlessKeySet()
+    static void SkipUnlessKeySet(string modelId)
     {
-        Assert.SkipUnless(Environment.GetEnvironmentVariable("OPENAI_API_KEY") is { Length: > 0 }, "OPENAI_API_KEY environment variable not set");
+        if (modelId.StartsWith("appleIntelligence", StringComparison.OrdinalIgnoreCase))
+        {
+#if __IOS__ || __MACOS__ || __MACCATALYST__ || __TVOS__
+#else
+            Assert.Skip("Apple Intelligence is not supported on this platform.");
+#endif
+            return;
+        }
+        var parts = modelId.Split(':', 2);
+        if (parts.Length != 2)
+            throw new ArgumentException("Invalid model ID format. Expected format: 'provider:modelName'");
+        var keyPrefix = parts[0].ToUpperInvariant();
+        var keyName = keyPrefix + "_API_KEY";
+        Assert.SkipUnless(Environment.GetEnvironmentVariable(keyName) is { Length: > 0 }, $"{keyName} environment variable not set");
     }
 
     class NonPlayerCharacter

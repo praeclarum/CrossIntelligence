@@ -70,7 +70,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
                 }
             };
         }
-        var initialRequest = new ResponsesRequest
+        var initialRequest = new ChatCompletionsRequest
         {
             Model = model,
             Input = transcript.ToArray(),
@@ -119,7 +119,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
             }
             if (toolResults.Count > 0)
             {
-                var toolOutputRequest = new ResponsesRequest
+                var toolOutputRequest = new ChatCompletionsRequest
                 {
                     Model = model,
                     Input = transcript.ToArray(),
@@ -133,7 +133,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         return allOutput;
     }
 
-    async Task<ResponsesResponse> GetResponseAsync(ResponsesRequest request)
+    async Task<ChatCompletionsResponse> GetResponseAsync(ChatCompletionsRequest request)
     {
         JsonSerializerSettings settings = new JsonSerializerSettings
         {
@@ -143,17 +143,17 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         var json = JsonConvert.SerializeObject(request, settings);
         var requestContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-        var response = await httpClient.PostAsync($"{baseUrl}/responses", requestContent).ConfigureAwait(false);
+        var response = await httpClient.PostAsync($"{baseUrl}/chat/completions", requestContent).ConfigureAwait(false);
         var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
         {
-            throw new HttpRequestException($"OpenAI API request failed with status code {response.StatusCode} ({(int)response.StatusCode}): {responseBody}");
+            throw new HttpRequestException($"Chat API request failed with status code {response.StatusCode} ({(int)response.StatusCode}): {responseBody}");
         }
 
-        var responseData = JsonConvert.DeserializeObject<ResponsesResponse>(responseBody);
+        var responseData = JsonConvert.DeserializeObject<ChatCompletionsResponse>(responseBody);
         if (responseData == null || responseData.Output.Length == 0)
         {
-            throw new InvalidOperationException("Invalid response from OpenAI API.");
+            throw new InvalidOperationException("Invalid response from Chat API.");
         }
         return responseData;
     }
@@ -177,7 +177,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         }
     }
 
-    class ResponsesRequest
+    class ChatCompletionsRequest
     {
         [JsonProperty("model")]
         public string Model { get; set; } = string.Empty;
@@ -189,7 +189,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         public TextOptions? TextOptions { get; set; } = null;
     }
 
-    class ResponsesResponse
+    class ChatCompletionsResponse
     {
         [JsonProperty("output")]
         public OutputMessage[] Output { get; set; } = Array.Empty<OutputMessage>();

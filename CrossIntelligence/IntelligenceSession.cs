@@ -1,5 +1,3 @@
-using System.Text.Json.Serialization;
-
 using Newtonsoft.Json;
 
 namespace CrossIntelligence;
@@ -22,6 +20,11 @@ public class IntelligenceSession : IDisposable
 
     public IntelligenceSession(IIntelligenceModel model, IIntelligenceTool[]? tools = null, string instructions = "")
         : this(model.CreateSessionImplementation(tools: tools, instructions: instructions))
+    {
+    }
+
+    public IntelligenceSession(string modelId, IIntelligenceTool[]? tools = null, string instructions = "")
+        : this(IntelligenceModels.FromId(modelId) ?? throw new ArgumentException($"Model ID not found: {modelId}"), tools, instructions)
     {
     }
 

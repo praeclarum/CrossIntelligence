@@ -147,13 +147,13 @@ class ResponsesApiSessionImplementation : IIntelligenceSessionImplementation
         var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
         {
-            throw new HttpRequestException($"OpenAI API request failed with status code {response.StatusCode} ({(int)response.StatusCode}): {responseBody}");
+            throw new HttpRequestException($"Responses API request failed with status code {response.StatusCode} ({(int)response.StatusCode}): {responseBody}");
         }
 
         var responseData = JsonConvert.DeserializeObject<ResponsesResponse>(responseBody);
         if (responseData == null || responseData.Output.Length == 0)
         {
-            throw new InvalidOperationException("Invalid response from OpenAI API.");
+            throw new InvalidOperationException("Invalid response from Responses API.");
         }
         return responseData;
     }
