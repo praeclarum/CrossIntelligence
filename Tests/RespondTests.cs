@@ -80,7 +80,7 @@ public class StringResponseTests
 
         var session = new IntelligenceSession(modelId, tools: [new AddPlayerWithStructuredOutputTool(gameDatabase)]);
         Assert.Equal(0, gameDatabase.NpcCount);
-        var response = await session.RespondAsync("Add 3 new NPCs to the game.");
+        var response = await session.RespondAsync("Add 3 new NPCs to the game. Just make up their information, don't ask me anything.");
         Assert.NotNull(response);
         Assert.Equal(3, gameDatabase.NpcCount);
         foreach (var npc in gameDatabase.Npcs)

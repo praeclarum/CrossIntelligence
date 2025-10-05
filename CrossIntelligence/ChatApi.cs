@@ -83,12 +83,13 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         do
         {
             toolResults.Clear();
-            foreach (var output in response.Choices)
-            {/*
-                transcript.Add(output);
-                if (false)
+            var choice = response.Choices.FirstOrDefault(x => x.Message is not null);
+            if (choice?.Message is OutputMessage message)
+            {
+                transcript.Add(message);
+                foreach (var toolCall in message.ToolCalls ?? [])
                 {
-                    var toolName = output.Name;
+                    /*var toolName = toolCall.Function?.Name ?? "";
                     var result = "";
                     var tool = tools.FirstOrDefault(t => t.Name == toolName);
                     try
@@ -111,8 +112,8 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
                         CallId = output.CallId ?? "",
                         Output = result
                     };
-                    toolResults.Add(m);
-                }*/
+                    toolResults.Add(m);*/
+                }
             }
             foreach (var toolResult in toolResults)
             {
@@ -229,16 +230,32 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
 
     class OutputMessage : Message
     {
-        [JsonProperty("status")]
-        public string? Status { get; set; } = null;
-        [JsonProperty("call_id")]
-        public string? CallId { get; set; } = null;
+        [JsonProperty("tool_calls")]
+        public ToolCall[]? ToolCalls { get; set; } = null;
+        [JsonProperty("refusal")]
+        public string? Refusal { get; set; } = null;
+        [JsonProperty("reasoning")]
+        public string? Reasoning { get; set; } = null;
+    }
+
+    class ToolCall
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; } = "";
+        [JsonProperty("type")]
+        public string Type { get; set; } = "";
+        [JsonProperty("index")]
+        public int Index { get; set; } = 0;
+        [JsonProperty("function")]
+        public ToolCallFunction? Function { get; set; } = null;
+    }
+
+    class ToolCallFunction
+    {
         [JsonProperty("name")]
-        public string? Name { get; set; } = null;
+        public string Name { get; set; } = "";
         [JsonProperty("arguments")]
         public string? Arguments { get; set; } = null;
-        [JsonProperty("summary")]
-        public string[]? Summary { get; set; } = null;
     }
 
     class ToolDefinition
