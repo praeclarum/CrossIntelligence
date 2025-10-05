@@ -14,10 +14,7 @@ public class StringResponseTests
     [Fact]
     public async Task SayThisIsATest()
     {
-        foreach (var env in System.Environment.GetEnvironmentVariables())
-        {
-            output.WriteLine(env.ToString());
-        }
+        Assert.SkipUnless(Environment.GetEnvironmentVariable("OPENAI_API_KEY") is { Length: > 0 }, "OPENAI_API_KEY environment variable not set");
 
         using var session = new IntelligenceSession();
         var response = await session.RespondAsync("Say \"this is a test\"");
