@@ -34,7 +34,7 @@ public partial class ChatPage : ContentPage
 			OnPropertyChanged(nameof(UseAppleIntelligence));
 			var oldSession = session;
 			session = new(
-				model: useAppleIntelligence ? IntelligenceModels.AppleIntelligence : IntelligenceModels.OpenAI("gpt-4.1", apiKey: openAIApiKey));
+				model: useAppleIntelligence ? IntelligenceModels.AppleIntelligence : IntelligenceModels.OpenAI("gpt-4.1"));
 			oldSession.Dispose();
 		}
 	}
@@ -43,8 +43,9 @@ public partial class ChatPage : ContentPage
 	{
 		var s = new Label();
 		InitializeComponent();
+		ApiKeys.OpenAI = openAIApiKey;
 		session = new(
-			model: useAppleIntelligence ? IntelligenceModels.AppleIntelligence : IntelligenceModels.OpenAI("gpt-4.1", apiKey: openAIApiKey));
+			model: useAppleIntelligence ? IntelligenceModels.AppleIntelligence : IntelligenceModels.OpenAI("gpt-4.1"));
 		TranscriptList.ItemsSource = transcript;
 		BindingContext = this;
 	}
