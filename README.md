@@ -4,6 +4,7 @@
 
 A library to provide access to Apple Intelligence and other LLMs for .NET and MAUI applications.
 
+
 ## Installation
 
 You can install the CrossIntelligence library via NuGet:
@@ -11,6 +12,7 @@ You can install the CrossIntelligence library via NuGet:
 ```bash
 dotnet add package CrossIntelligence
 ```
+
 
 ## Usage
 
@@ -79,22 +81,30 @@ Console.WriteLine(response);
 You can use other models than the default system model by passing in the `model` parameter when creating the `IntelligenceSession`.
 
 ```csharp
-var session = new IntelligenceSession(model: IntelligenceModels.OpenAI("gpt-5-mini", apiKey: "OPENAI_API_KEY"));
+ApiKeys.OpenAI = "OPENAI_API_KEY"; // Set your OpenAI API key here
+var session = new IntelligenceSession(IntelligenceModels.OpenAI("gpt-5-mini"));
 var response = await session.RespondAsync("What is the meaning of life?");
 Console.WriteLine(response);
 ```
 
+### API Keys
+
+API keys can be set using the static `ApiKeys` class. These are in-memory only and not persisted.
+
+
 ## Testing
 
-Tests require an OpenAI API key to run. Pass the OpenAI API key as an environment variable before running the tests.
+Some tests require API keys to run. Pass the OpenAI API and OpenRouter keys as environment variables before running the tests.
 
 ```bash
-dotnet test -c Release -e OPENAI_API_KEY=$OPENAI_API_KEY Tests/Tests.csproj
+dotnet test -c Release -e OPENAI_API_KEY=$OPENAI_API_KEY -e OPENROUTER_API_KEY=$OPENROUTER_API_KEY Tests/Tests.csproj
 ```
+
 
 ## Contributing
 
 If you'd like to contribute to the CrossIntelligence library, please fork the repository and submit a pull request.
+
 
 ## License
 

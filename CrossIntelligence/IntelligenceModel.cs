@@ -18,13 +18,11 @@ public static class IntelligenceModels
     public static AppleIntelligenceModel AppleIntelligence { get; } = new AppleIntelligenceModel();
     public static IIntelligenceModel Default { get; set; } = AppleIntelligence;
 #else
-    public static IIntelligenceModel Default { get; set; } = OpenAI("gpt-5-mini");
+    public static IIntelligenceModel Default { get; set; } = OpenAI(OpenAIModel.DefaultModel);
 #endif
 
-    public static OpenAIModel OpenAI(string model, string? apiKey = null)
-    {
-        return new OpenAIModel(model, apiKey: apiKey);
-    }
+    public static OpenAIModel OpenAI(string model) => new(model);
+    public static OpenRouterModel OpenRouter(string model) => new(model);
 
     public static IIntelligenceModel? FromId(string id)
     {

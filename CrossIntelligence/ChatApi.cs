@@ -125,10 +125,10 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         JsonSerializerSettings settings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
-            Formatting = Formatting.Indented
+            Formatting = Formatting.None
         };
         var requestBody = JsonConvert.SerializeObject(request, settings);
-        System.Diagnostics.Debug.WriteLine(requestBody);
+        // System.Diagnostics.Debug.WriteLine(requestBody);
         var requestContent = new StringContent(requestBody, System.Text.Encoding.UTF8, "application/json");
 
         var response = await httpClient.PostAsync($"{baseUrl}/chat/completions", requestContent).ConfigureAwait(false);
@@ -137,7 +137,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         {
             throw new HttpRequestException($"Chat API request failed with status code {response.StatusCode} ({(int)response.StatusCode}): {responseBody}");
         }
-        System.Diagnostics.Debug.WriteLine(responseBody);
+        // System.Diagnostics.Debug.WriteLine(responseBody);
 
         var responseData = JsonConvert.DeserializeObject<ChatCompletionsResponse>(responseBody);
         if (responseData == null || responseData.Choices.Length == 0)

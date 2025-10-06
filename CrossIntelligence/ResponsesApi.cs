@@ -138,7 +138,7 @@ class ResponsesApiSessionImplementation : IIntelligenceSessionImplementation
         JsonSerializerSettings settings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
-            Formatting = Formatting.Indented
+            Formatting = Formatting.None
         };
         var json = JsonConvert.SerializeObject(request, settings);
         var requestContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");

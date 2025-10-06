@@ -1,34 +1,30 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Schema;
-
 // ReSharper disable InconsistentNaming
 
 namespace CrossIntelligence;
 
 public class OpenAIModel : IIntelligenceModel
 {
+    public const string DefaultModel = "gpt-5-mini";
+
     public readonly string Model;
-    public readonly string? ApiKey;
     
     public string Id => $"openai:{Model}";
 
-    public OpenAIModel(string model, string? apiKey = null)
+    public OpenAIModel(string model)
     {
         Model = model;
-        ApiKey = apiKey;
     }
 
     public IIntelligenceSessionImplementation CreateSessionImplementation(IIntelligenceTool[]? tools, string instructions)
     {
-        var apiKey = ApiKey ?? (Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? "");
-        return new OpenAISessionImplementation(model: Model, apiKey: apiKey, tools: tools, instructions: instructions);
+        return new OpenAISessionImplementation(model: Model, tools: tools, instructions: instructions);
     }
 }
 
 class OpenAISessionImplementation : ResponsesApiSessionImplementation
 {
-    public OpenAISessionImplementation(string model, string apiKey, IIntelligenceTool[]? tools, string instructions, HttpClient? httpClient = null)
-        : base("https://api.openai.com/v1", model, apiKey, tools, instructions, httpClient)
+    public OpenAISessionImplementation(string model, IIntelligenceTool[]? tools, string instructions, HttpClient? httpClient = null)
+        : base("https://api.openai.com/v1", model, ApiKeys.OpenAI, tools, instructions, httpClient)
     {
     }
 }
