@@ -6,7 +6,7 @@ public class StringResponseTests
 {
     const string OpenAIModelId = "openai:gpt-5-mini";
     // const string OpenRouterModelId = "openrouter:google/gemma-3-27b-it:free";
-    const string OpenRouterModelId = "openrouter:mistralai/mistral-small-3.1-24b-instruct:free";
+    const string OpenRouterModelId = "openrouter:meta-llama/llama-4-scout:free";
 
     private readonly ITestOutputHelper output;
 

@@ -79,7 +79,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
             ResponseFormat = responseFormat
         };
         var response = await GetResponseAsync(initialRequest).ConfigureAwait(false);
-        var toolResults = new List<FunctionCallOutputMessage>();
+        var toolResults = new List<ToolCallOutputMessage>();
         do
         {
             toolResults.Clear();
@@ -89,30 +89,12 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
                 transcript.Add(message);
                 foreach (var toolCall in message.ToolCalls ?? [])
                 {
-                    /*var toolName = toolCall.Function?.Name ?? "";
-                    var result = "";
-                    var tool = tools.FirstOrDefault(t => t.Name == toolName);
-                    try
+                    var result = await CallToolAsync(toolCall.Function?.Name ?? "", toolCall.Function?.Arguments ?? "").ConfigureAwait(false);
+                    toolResults.Add(new ToolCallOutputMessage
                     {
-                        if (tool is not null)
-                        {
-                            result = await tool.ExecuteAsync(output.Arguments ?? "").ConfigureAwait(false);
-                        }
-                        else
-                        {
-                            result = $"Function '{toolName}' not found.";
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        result = $"Error: {ex.Message}";
-                    }
-                    var m = new FunctionCallOutputMessage
-                    {
-                        CallId = output.CallId ?? "",
-                        Output = result
-                    };
-                    toolResults.Add(m);*/
+                        ToolCallId = toolCall.Id ?? "",
+                        Content = result
+                    });
                 }
             }
             foreach (var toolResult in toolResults)
@@ -163,6 +145,25 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
             throw new InvalidOperationException("Invalid response from Chat API.");
         }
         return responseData;
+    }
+
+    async Task<string> CallToolAsync(string toolName, string arguments)
+    {
+        try
+        {
+            if (tools.FirstOrDefault(t => t.Name == toolName) is IIntelligenceTool tool)
+            {
+                return await tool.ExecuteAsync(arguments ?? "").ConfigureAwait(false);
+            }
+            else
+            {
+                return $"Error: Tool \"{toolName}\" not found.";
+            }
+        }
+        catch (Exception ex)
+        {
+            return $"Error: {ex.Message}";
+        }
     }
 
     public void Dispose()
@@ -220,12 +221,14 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         public string? Content { get; set; } = null;
     }
 
-    class FunctionCallOutputMessage : Message
+    class ToolCallOutputMessage : Message
     {
-        [JsonProperty("call_id")]
-        public string? CallId { get; set; } = null;
-        [JsonProperty("output")]
-        public string? Output { get; set; } = null;
+        [JsonProperty("tool_call_id")]
+        public string? ToolCallId { get; set; } = null;
+        public ToolCallOutputMessage()
+        {
+            Role = "tool";
+        }
     }
 
     class OutputMessage : Message

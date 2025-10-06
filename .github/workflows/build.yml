@@ -51,7 +51,7 @@ jobs:
       run: dotnet build -c Release CrossIntelligence/CrossIntelligence.csproj
 
     - name: Test
-      run: dotnet test -c Release -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} --logger "console;verbosity=detailed" Tests/Tests.csproj
+      run: dotnet test -c Release -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} -e OPENROUTER_API_KEY=${{ secrets.OPENROUTER_API_KEY }} --logger "console;verbosity=detailed" Tests/Tests.csproj
 
     - name: Build Sample
       run: dotnet build -c Release -f net9.0-maccatalyst26.0 -r maccatalyst-arm64 Sample/CrossIntelligenceSample.csproj
