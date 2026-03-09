@@ -20,6 +20,7 @@ public class TranscriptEntry : NSObject
 }
 
 protocol IntelligenceSessionImplementation {
+    @available(iOS 13.0, *)
     func respond(to prompt: String) async throws -> String
     @available(iOS 26.0, macOS 26.0, macCatalyst 26.0, visionOS 26.0, *)
     func respond(to prompt: String, schema: GenerationSchema, includeSchemaInPrompt: Bool) async throws -> GeneratedContent
@@ -92,7 +93,7 @@ public class AppleIntelligenceSessionNative : NSObject
 
     @objc
     public func respond(_ prompt: String, onComplete: @escaping (String, NSError?) -> Void) {
-        if let implementation {
+        if #available(iOS 13.0, *), let implementation {
             Task.detached {
                 do {
                     let response = try await implementation.respond(to: prompt)
