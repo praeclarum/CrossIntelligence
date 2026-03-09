@@ -8,7 +8,7 @@ public class ApiKeysTests
     [InlineData("openai", "OPENAI_API_KEY")]
     [InlineData("openai:gpt-5-mini", "OPENAI_API_KEY")]
     [InlineData("openrouter", "OPENROUTER_API_KEY")]
-    [InlineData("openrouter:meta-llama/llama-4-scout:free", "OPENROUTER_API_KEY")]
+    [InlineData("openrouter:meta-llama/llama-4-scout", "OPENROUTER_API_KEY")]
     public void ApiKeysInitToEnv(string modelId, string env)
     {
         var envValue = Environment.GetEnvironmentVariable(env) ?? "";
@@ -21,7 +21,7 @@ public class ApiKeysTests
     [InlineData("openai", "OPENAI_API_KEY")]
     [InlineData("openai:gpt-5-mini", "OPENAI_API_KEY")]
     [InlineData("openrouter", "OPENROUTER_API_KEY")]
-    [InlineData("openrouter:meta-llama/llama-4-scout:free", "OPENROUTER_API_KEY")]
+    [InlineData("openrouter:meta-llama/llama-4-scout", "OPENROUTER_API_KEY")]
     public void ChangingApiKeyDoesntAffectEnv(string modelId, string env)
     {
         var envValueInit = Environment.GetEnvironmentVariable(env) ?? "";
