@@ -3,7 +3,7 @@
     <TargetFrameworks>net10.0;net10.0-ios;net10.0-macos;net10.0-maccatalyst</TargetFrameworks>
 
     <PackageId>CrossIntelligence</PackageId>
-    <Version>0.5.0</Version>
+    <Version>0.6.0</Version>
     <Authors>praeclarum</Authors>
     <Company>Krueger Systems, Inc.</Company>
     <PackageTags>ai,llm,maui,intelligence,apple,ios,maccatalyst,macos,android</PackageTags>
