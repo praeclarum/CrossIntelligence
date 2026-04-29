@@ -189,12 +189,41 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
     {
         [JsonProperty("model")]
         public string Model { get; set; } = string.Empty;
+        [JsonProperty("cache_control")]
+        public ChatCacheControl? CacheControl { get; set; } = ChatCacheControl.Ephemeral;
+        [JsonProperty("reasoning")]
+        public ChatReasoning Reasoning { get; set; } = ChatReasoning.None;
         [JsonProperty("messages")]
         public Message[] Messages { get; set; } = Array.Empty<Message>();
+        [JsonProperty("parallel_tool_calls")]
+        public bool ParallelToolCalls { get; set; } = true;
         [JsonProperty("tools")]
         public ToolDefinition[] Tools { get; set; } = Array.Empty<ToolDefinition>();
         [JsonProperty("response_format")]
         public ResponseFormat? ResponseFormat { get; set; } = null;
+    }
+
+    class ChatCacheControl
+    {
+        [JsonProperty("type")]
+        public string Type { get; set; } = "ephemeral";
+
+        public static ChatCacheControl Ephemeral => new() { Type = "ephemeral" };
+    }
+
+    class ChatReasoning
+    {
+        [JsonProperty("effort")]
+        public string Effort { get; set; } = "none";
+        [JsonProperty("exclude")]
+        public bool Exclude { get; set; } = false;
+
+        public static ChatReasoning None => new() { Effort = "none" };
+        public static ChatReasoning Minimal => new() { Effort = "minimal" };
+        public static ChatReasoning Low => new() { Effort = "low" };
+        public static ChatReasoning Medium => new() { Effort = "medium" };
+        public static ChatReasoning High => new() { Effort = "high" };
+        public static ChatReasoning XHigh => new() { Effort = "xhigh" };
     }
 
     class ChatCompletionsResponse
