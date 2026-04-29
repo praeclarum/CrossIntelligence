@@ -15,14 +15,29 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
     // We must not dispose an externally owned HttpClient.
     private readonly bool ownsHttpClient;
     private readonly List<Message> transcript = new();
-    // Retained reference so we can patch the role in-place on provider fallback.
+    // Retained reference so InstructionRole can update the role in the transcript at any time.
     private readonly Message? instructionMessage;
     private bool disposed = false;
 
-    // Preferred instruction role; falls back to "system" the first time a provider rejects "developer".
-    private string instructionRole = "developer";
     // Set to false after the first provider rejection of json_schema response_format.
     private bool supportsJsonSchemaFormat = true;
+
+    private string _instructionRole = "developer";
+    /// <summary>
+    /// The role used for the instruction message. Defaults to <c>"developer"</c>;
+    /// set to <c>"system"</c> for providers that do not recognise the developer role.
+    /// Must be set before the first call to <see cref="RespondAsync(string)"/>.
+    /// </summary>
+    public string InstructionRole
+    {
+        get => _instructionRole;
+        set
+        {
+            _instructionRole = value;
+            if (instructionMessage != null)
+                instructionMessage.Role = value;
+        }
+    }
 
     public ChatApiSessionImplementation(string baseUrl, string model, string apiKey, IIntelligenceTool[]? tools, string instructions, HttpClient? httpClient = null)
     {
@@ -39,7 +54,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         {
             instructionMessage = new Message
             {
-                Role = instructionRole,
+                Role = _instructionRole,
                 Content = instructions
             };
             transcript.Add(instructionMessage);
@@ -149,11 +164,9 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
             Formatting = Formatting.None
         };
 
-        // Up to 3 attempts with deterministic compatibility fallbacks (no infinite retry):
-        //   attempt 0 – original request
-        //   attempt 1 – if 4xx: switch instruction role "developer" -> "system"
-        //   attempt 2 – if still 4xx: drop unsupported json_schema response_format
-        for (int attempt = 0; attempt < 3; attempt++)
+        // Two attempts at most: the first with the full request, and a second without
+        // response_format if the provider rejects json_schema on a 4xx error.
+        for (int attempt = 0; attempt < 2; attempt++)
         {
             var requestBody = JsonConvert.SerializeObject(request, settings);
             // System.Diagnostics.Debug.WriteLine(requestBody);
@@ -173,40 +186,25 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
 
             int statusCode = (int)httpResponse.StatusCode;
 
-            // Only apply compatibility fallbacks for 4xx client errors; server errors are not retried.
-            if (statusCode >= 400 && statusCode < 500)
+            // On a 4xx error, drop an unsupported json_schema response_format and retry once.
+            if (statusCode >= 400 && statusCode < 500 && request.ResponseFormat != null)
             {
-                // Fallback 1: some providers/models don't recognise the "developer" role; retry with "system".
-                if (instructionRole == "developer")
+                supportsJsonSchemaFormat = false;
+                request = new ChatCompletionsRequest
                 {
-                    instructionRole = "system";
-                    // Patch the retained instruction message in-place so the transcript stays consistent.
-                    if (instructionMessage != null)
-                        instructionMessage.Role = "system";
-                    continue;
-                }
-
-                // Fallback 2: provider/model doesn't support json_schema response_format; retry without it.
-                if (request.ResponseFormat != null)
-                {
-                    supportsJsonSchemaFormat = false;
-                    request = new ChatCompletionsRequest
-                    {
-                        Model = request.Model,
-                        Messages = request.Messages,
-                        Tools = request.Tools,
-                        ResponseFormat = null // omit unsupported structured-output format
-                    };
-                    continue;
-                }
+                    Model = request.Model,
+                    Messages = request.Messages,
+                    Tools = request.Tools,
+                    ResponseFormat = null // omit unsupported structured-output format
+                };
+                continue;
             }
 
-            // No applicable fallback – surface the error immediately.
             throw new HttpRequestException($"Chat API request failed with status code {httpResponse.StatusCode} ({statusCode}): {responseBody}");
         }
 
-        // Unreachable in practice; all code paths above either return or throw.
-        throw new InvalidOperationException("Unexpected exit from compatibility retry loop.");
+        // Unreachable in practice; all paths above return or throw.
+        throw new InvalidOperationException("Unexpected exit from retry loop.");
     }
 
     async Task<string> CallToolAsync(string toolName, string arguments, CancellationToken cancellationToken)
@@ -217,8 +215,6 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
             cancellationToken.ThrowIfCancellationRequested();
             if (tools.FirstOrDefault(t => t.Name == toolName) is IIntelligenceTool tool)
             {
-                // IIntelligenceTool.ExecuteAsync does not accept a CancellationToken;
-                // propagation ends here for now.
                 return await tool.ExecuteAsync(arguments).ConfigureAwait(false);
             }
             else

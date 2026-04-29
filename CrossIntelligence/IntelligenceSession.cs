@@ -6,6 +6,10 @@ public interface IIntelligenceSessionImplementation : IDisposable
 {
     Task<string> RespondAsync(string prompt);
     Task<string> RespondAsync(string prompt, Type responseType);
+    // Default implementations delegate to the non-CT overloads for backward compatibility
+    // with existing implementations that have not yet been updated.
+    Task<string> RespondAsync(string prompt, CancellationToken cancellationToken) => RespondAsync(prompt);
+    Task<string> RespondAsync(string prompt, Type responseType, CancellationToken cancellationToken) => RespondAsync(prompt, responseType);
 }
 
 public class IntelligenceSession : IDisposable
@@ -46,6 +50,11 @@ public class IntelligenceSession : IDisposable
         return implementation.RespondAsync(prompt);
     }
 
+    public Task<string> RespondAsync(string prompt, CancellationToken cancellationToken)
+    {
+        return implementation.RespondAsync(prompt, cancellationToken);
+    }
+
     public async Task<object> RespondAsync(string prompt, Type responseType)
     {
         var json = await implementation.RespondAsync(prompt, responseType).ConfigureAwait(false);
@@ -56,9 +65,25 @@ public class IntelligenceSession : IDisposable
         throw new Exception($"Failed to deserialize response to type: {responseType.Name}. Response: {json}");
     }
 
+    public async Task<object> RespondAsync(string prompt, Type responseType, CancellationToken cancellationToken)
+    {
+        var json = await implementation.RespondAsync(prompt, responseType, cancellationToken).ConfigureAwait(false);
+        if (JsonConvert.DeserializeObject(json, responseType) is { } result)
+        {
+            return result;
+        }
+        throw new Exception($"Failed to deserialize response to type: {responseType.Name}. Response: {json}");
+    }
+
     public async Task<T> RespondAsync<T>(string prompt)
     {
         var r = await RespondAsync(prompt, typeof(T)).ConfigureAwait(false);
+        return (T)r;
+    }
+
+    public async Task<T> RespondAsync<T>(string prompt, CancellationToken cancellationToken)
+    {
+        var r = await RespondAsync(prompt, typeof(T), cancellationToken).ConfigureAwait(false);
         return (T)r;
     }
 

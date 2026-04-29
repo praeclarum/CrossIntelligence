@@ -11,6 +11,7 @@ class ResponsesApiSessionImplementation : IIntelligenceSessionImplementation
     private readonly IIntelligenceTool[] tools;
     private readonly ToolDefinition[] toolDefinitions;
     private readonly HttpClient httpClient;
+    private readonly bool ownsHttpClient;
     private readonly List<Message> transcript = new();
     private bool disposed = false;
 
@@ -21,6 +22,7 @@ class ResponsesApiSessionImplementation : IIntelligenceSessionImplementation
         this.apiKey = apiKey;
         this.tools = tools ?? Array.Empty<IIntelligenceTool>();
         this.toolDefinitions = this.tools.Select(tool => ToolDefinition.FromTool(tool)).ToArray();
+        ownsHttpClient = httpClient == null;
         this.httpClient = httpClient ?? new HttpClient();
         this.httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
         if (!string.IsNullOrEmpty(instructions))
@@ -38,17 +40,21 @@ class ResponsesApiSessionImplementation : IIntelligenceSessionImplementation
         Dispose(false);
     }
 
+    // IIntelligenceSessionImplementation – backward-compatible signatures delegate to CT overloads.
     public Task<string> RespondAsync(string prompt)
-    {
-        return InternalRespondAsync(prompt, null);
-    }
+        => RespondAsync(prompt, CancellationToken.None);
 
     public Task<string> RespondAsync(string prompt, Type responseType)
-    {
-        return InternalRespondAsync(prompt, responseType);
-    }
+        => RespondAsync(prompt, responseType, CancellationToken.None);
 
-    async Task<string> InternalRespondAsync(string prompt, Type? responseType)
+    // Extended overloads with CancellationToken support.
+    public Task<string> RespondAsync(string prompt, CancellationToken cancellationToken)
+        => InternalRespondAsync(prompt, null, cancellationToken);
+
+    public Task<string> RespondAsync(string prompt, Type responseType, CancellationToken cancellationToken)
+        => InternalRespondAsync(prompt, responseType, cancellationToken);
+
+    async Task<string> InternalRespondAsync(string prompt, Type? responseType, CancellationToken cancellationToken)
     {
         var userMessage = new InputContentMessage
         {
@@ -77,7 +83,7 @@ class ResponsesApiSessionImplementation : IIntelligenceSessionImplementation
             Tools = toolDefinitions,
             TextOptions = textOptions
         };
-        var response = await GetResponseAsync(initialRequest).ConfigureAwait(false);
+        var response = await GetResponseAsync(initialRequest, cancellationToken).ConfigureAwait(false);
         var toolResults = new List<FunctionCallOutputMessage>();
         do
         {
@@ -92,6 +98,7 @@ class ResponsesApiSessionImplementation : IIntelligenceSessionImplementation
                     var tool = tools.FirstOrDefault(t => t.Name == toolName);
                     try
                     {
+                        cancellationToken.ThrowIfCancellationRequested();
                         if (tool is not null)
                         {
                             result = await tool.ExecuteAsync(output.Arguments ?? "").ConfigureAwait(false);
@@ -100,6 +107,10 @@ class ResponsesApiSessionImplementation : IIntelligenceSessionImplementation
                         {
                             result = $"Function '{toolName}' not found.";
                         }
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw; // Never swallow cancellation.
                     }
                     catch (Exception ex)
                     {
@@ -126,14 +137,14 @@ class ResponsesApiSessionImplementation : IIntelligenceSessionImplementation
                     Tools = toolDefinitions,
                     TextOptions = textOptions
                 };
-                response = await GetResponseAsync(toolOutputRequest).ConfigureAwait(false);
+                response = await GetResponseAsync(toolOutputRequest, cancellationToken).ConfigureAwait(false);
             }
         } while (toolResults.Count > 0);
         var allOutput = string.Join("\n\n", response.Output.Where(t => t.Content != null).SelectMany(m => m.Content ?? Array.Empty<Content>()).Select(c => c.Text));
         return allOutput;
     }
 
-    async Task<ResponsesResponse> GetResponseAsync(ResponsesRequest request)
+    async Task<ResponsesResponse> GetResponseAsync(ResponsesRequest request, CancellationToken cancellationToken)
     {
         JsonSerializerSettings settings = new JsonSerializerSettings
         {
@@ -143,8 +154,8 @@ class ResponsesApiSessionImplementation : IIntelligenceSessionImplementation
         var json = JsonConvert.SerializeObject(request, settings);
         var requestContent = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
 
-        var response = await httpClient.PostAsync($"{baseUrl}/responses", requestContent).ConfigureAwait(false);
-        var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        var response = await httpClient.PostAsync($"{baseUrl}/responses", requestContent, cancellationToken).ConfigureAwait(false);
+        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
         {
             throw new HttpRequestException($"Responses API request failed with status code {response.StatusCode} ({(int)response.StatusCode}): {responseBody}");
@@ -170,8 +181,10 @@ class ResponsesApiSessionImplementation : IIntelligenceSessionImplementation
         {
             if (disposing)
             {
-                // Dispose managed resources
-                httpClient?.Dispose();
+                // Only dispose the HttpClient when this instance owns it (i.e. created it internally).
+                // An externally injected HttpClient is the caller's responsibility.
+                if (ownsHttpClient)
+                    httpClient?.Dispose();
             }
             disposed = true;
         }
