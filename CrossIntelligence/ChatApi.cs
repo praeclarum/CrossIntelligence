@@ -11,8 +11,18 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
     private readonly IIntelligenceTool[] tools;
     private readonly ToolDefinition[] toolDefinitions;
     private readonly HttpClient httpClient;
+    // True when this instance created the HttpClient; false when the caller injected it.
+    // We must not dispose an externally owned HttpClient.
+    private readonly bool ownsHttpClient;
     private readonly List<Message> transcript = new();
+    // Retained reference so we can patch the role in-place on provider fallback.
+    private readonly Message? instructionMessage;
     private bool disposed = false;
+
+    // Preferred instruction role; falls back to "system" the first time a provider rejects "developer".
+    private string instructionRole = "developer";
+    // Set to false after the first provider rejection of json_schema response_format.
+    private bool supportsJsonSchemaFormat = true;
 
     public ChatApiSessionImplementation(string baseUrl, string model, string apiKey, IIntelligenceTool[]? tools, string instructions, HttpClient? httpClient = null)
     {
@@ -21,15 +31,18 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         this.apiKey = apiKey;
         this.tools = tools ?? Array.Empty<IIntelligenceTool>();
         this.toolDefinitions = this.tools.Select(tool => ToolDefinition.FromTool(tool)).ToArray();
+        // Track ownership so Dispose only releases what this instance allocated.
+        ownsHttpClient = httpClient == null;
         this.httpClient = httpClient ?? new HttpClient();
         this.httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
         if (!string.IsNullOrEmpty(instructions))
         {
-            transcript.Add(new Message
+            instructionMessage = new Message
             {
-                Role = "developer",
+                Role = instructionRole,
                 Content = instructions
-            });
+            };
+            transcript.Add(instructionMessage);
         }
     }
 
@@ -38,17 +51,21 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         Dispose(false);
     }
 
+    // IIntelligenceSessionImplementation – backward-compatible signatures delegate to CT overloads.
     public Task<string> RespondAsync(string prompt)
-    {
-        return InternalRespondAsync(prompt, null);
-    }
+        => RespondAsync(prompt, CancellationToken.None);
 
     public Task<string> RespondAsync(string prompt, Type responseType)
-    {
-        return InternalRespondAsync(prompt, responseType);
-    }
+        => RespondAsync(prompt, responseType, CancellationToken.None);
 
-    async Task<string> InternalRespondAsync(string prompt, Type? responseType)
+    // Extended overloads that expose CancellationToken support to callers.
+    public Task<string> RespondAsync(string prompt, CancellationToken cancellationToken)
+        => InternalRespondAsync(prompt, null, cancellationToken);
+
+    public Task<string> RespondAsync(string prompt, Type responseType, CancellationToken cancellationToken)
+        => InternalRespondAsync(prompt, responseType, cancellationToken);
+
+    async Task<string> InternalRespondAsync(string prompt, Type? responseType, CancellationToken cancellationToken)
     {
         var userMessage = new Message
         {
@@ -57,7 +74,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         };
         transcript.Add(userMessage);
         ResponseFormat? responseFormat = null;
-        if (responseType is not null)
+        if (responseType is not null && supportsJsonSchemaFormat)
         {
             var schema = responseType.GetJsonSchemaObject();
             responseFormat = new ResponseFormat
@@ -78,7 +95,11 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
             Tools = toolDefinitions,
             ResponseFormat = responseFormat
         };
-        var response = await GetResponseAsync(initialRequest).ConfigureAwait(false);
+        var response = await GetResponseAsync(initialRequest, cancellationToken).ConfigureAwait(false);
+        // If the provider rejected json_schema on the initial call, clear responseFormat so
+        // subsequent tool-loop requests don't waste an attempt trying it again.
+        if (!supportsJsonSchemaFormat)
+            responseFormat = null;
         var toolResults = new List<ToolCallOutputMessage>();
         do
         {
@@ -89,7 +110,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
                 transcript.Add(message);
                 foreach (var toolCall in message.ToolCalls ?? [])
                 {
-                    var result = await CallToolAsync(toolCall.Function?.Name ?? "", toolCall.Function?.Arguments ?? "").ConfigureAwait(false);
+                    var result = await CallToolAsync(toolCall.Function?.Name ?? "", toolCall.Function?.Arguments ?? "", cancellationToken).ConfigureAwait(false);
                     toolResults.Add(new ToolCallOutputMessage
                     {
                         ToolCallId = toolCall.Id ?? "",
@@ -110,7 +131,7 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
                     Tools = toolDefinitions,
                     ResponseFormat = responseFormat
                 };
-                response = await GetResponseAsync(toolOutputRequest).ConfigureAwait(false);
+                response = await GetResponseAsync(toolOutputRequest, cancellationToken).ConfigureAwait(false);
             }
         } while (toolResults.Count > 0);
         var allOutput = response.Choices
@@ -120,45 +141,94 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         return allOutput;
     }
 
-    async Task<ChatCompletionsResponse> GetResponseAsync(ChatCompletionsRequest request)
+    async Task<ChatCompletionsResponse> GetResponseAsync(ChatCompletionsRequest request, CancellationToken cancellationToken)
     {
         JsonSerializerSettings settings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
             Formatting = Formatting.None
         };
-        var requestBody = JsonConvert.SerializeObject(request, settings);
-        // System.Diagnostics.Debug.WriteLine(requestBody);
-        var requestContent = new StringContent(requestBody, System.Text.Encoding.UTF8, "application/json");
 
-        var response = await httpClient.PostAsync($"{baseUrl}/chat/completions", requestContent).ConfigureAwait(false);
-        var responseBody = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-        if (!response.IsSuccessStatusCode)
+        // Up to 3 attempts with deterministic compatibility fallbacks (no infinite retry):
+        //   attempt 0 – original request
+        //   attempt 1 – if 4xx: switch instruction role "developer" -> "system"
+        //   attempt 2 – if still 4xx: drop unsupported json_schema response_format
+        for (int attempt = 0; attempt < 3; attempt++)
         {
-            throw new HttpRequestException($"Chat API request failed with status code {response.StatusCode} ({(int)response.StatusCode}): {responseBody}");
-        }
-        // System.Diagnostics.Debug.WriteLine(responseBody);
+            var requestBody = JsonConvert.SerializeObject(request, settings);
+            // System.Diagnostics.Debug.WriteLine(requestBody);
+            var requestContent = new StringContent(requestBody, System.Text.Encoding.UTF8, "application/json");
 
-        var responseData = JsonConvert.DeserializeObject<ChatCompletionsResponse>(responseBody);
-        if (responseData == null || responseData.Choices.Length == 0)
-        {
-            throw new InvalidOperationException("Invalid response from Chat API.");
+            var httpResponse = await httpClient.PostAsync($"{baseUrl}/chat/completions", requestContent, cancellationToken).ConfigureAwait(false);
+            var responseBody = await httpResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                // System.Diagnostics.Debug.WriteLine(responseBody);
+                var responseData = JsonConvert.DeserializeObject<ChatCompletionsResponse>(responseBody);
+                if (responseData == null || responseData.Choices.Length == 0)
+                    throw new InvalidOperationException("Invalid response from Chat API.");
+                return responseData;
+            }
+
+            int statusCode = (int)httpResponse.StatusCode;
+
+            // Only apply compatibility fallbacks for 4xx client errors; server errors are not retried.
+            if (statusCode >= 400 && statusCode < 500)
+            {
+                // Fallback 1: some providers/models don't recognise the "developer" role; retry with "system".
+                if (instructionRole == "developer")
+                {
+                    instructionRole = "system";
+                    // Patch the retained instruction message in-place so the transcript stays consistent.
+                    if (instructionMessage != null)
+                        instructionMessage.Role = "system";
+                    continue;
+                }
+
+                // Fallback 2: provider/model doesn't support json_schema response_format; retry without it.
+                if (request.ResponseFormat != null)
+                {
+                    supportsJsonSchemaFormat = false;
+                    request = new ChatCompletionsRequest
+                    {
+                        Model = request.Model,
+                        Messages = request.Messages,
+                        Tools = request.Tools,
+                        ResponseFormat = null // omit unsupported structured-output format
+                    };
+                    continue;
+                }
+            }
+
+            // No applicable fallback – surface the error immediately.
+            throw new HttpRequestException($"Chat API request failed with status code {httpResponse.StatusCode} ({statusCode}): {responseBody}");
         }
-        return responseData;
+
+        // Unreachable in practice; all code paths above either return or throw.
+        throw new InvalidOperationException("Unexpected exit from compatibility retry loop.");
     }
 
-    async Task<string> CallToolAsync(string toolName, string arguments)
+    async Task<string> CallToolAsync(string toolName, string arguments, CancellationToken cancellationToken)
     {
         try
         {
+            // Check cancellation before starting potentially slow tool work.
+            cancellationToken.ThrowIfCancellationRequested();
             if (tools.FirstOrDefault(t => t.Name == toolName) is IIntelligenceTool tool)
             {
-                return await tool.ExecuteAsync(arguments ?? "").ConfigureAwait(false);
+                // IIntelligenceTool.ExecuteAsync does not accept a CancellationToken;
+                // propagation ends here for now.
+                return await tool.ExecuteAsync(arguments).ConfigureAwait(false);
             }
             else
             {
                 return $"Error: Tool \"{toolName}\" not found.";
             }
+        }
+        catch (OperationCanceledException)
+        {
+            throw; // Never swallow cancellation – let it propagate to the caller.
         }
         catch (Exception ex)
         {
@@ -178,8 +248,10 @@ class ChatApiSessionImplementation : IIntelligenceSessionImplementation
         {
             if (disposing)
             {
-                // Dispose managed resources
-                httpClient?.Dispose();
+                // Only dispose the HttpClient when this instance owns it (i.e. created it internally).
+                // An externally injected HttpClient is the caller's responsibility.
+                if (ownsHttpClient)
+                    httpClient?.Dispose();
             }
             disposed = true;
         }
