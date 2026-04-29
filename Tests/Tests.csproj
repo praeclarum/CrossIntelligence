@@ -8,6 +8,8 @@
     <IsPackable>false</IsPackable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+
     <!-- To enable Microsoft.Testing.Platform, uncomment the following line. -->
     <!-- <UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner> -->
     <!-- Note: to use Microsoft.Testing.Platform correctly with dotnet test: -->
