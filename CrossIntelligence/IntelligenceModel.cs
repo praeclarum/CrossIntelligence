@@ -1,4 +1,4 @@
-using CrossIntelligence;
+namespace CrossIntelligence;
 
 public interface IIntelligenceModel
 {
