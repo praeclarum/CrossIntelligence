@@ -21,7 +21,7 @@ on:
 jobs:
   build:
     name: Build iOS and Mac
-    runs-on: macos-27
+    runs-on: macos-26
 
     steps:
 
